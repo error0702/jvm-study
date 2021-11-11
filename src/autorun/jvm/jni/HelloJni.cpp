@@ -23,10 +23,23 @@ JNIEXPORT void JNICALL Java_HelloJni_hello(JNIEnv *env, jobject obj)
     // toString()Ljava/lang/String;
     jobject toStringRst = env->CallObjectMethod(mapObj2, env->GetMethodID(mapKlass, "toString", "()Ljava/lang/String;"));
     cout << toStringRst << endl;
+
+    // call hashmap put
+    // put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    jint* value = new jint;
+    value = 5;
+    env->CallDoubleMethodA(mapObj2, env->GetMethodID(mapKlass, "put",
+                                                     "<(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;>"),
+                           value);
+//    jobject putObj = env->CallObjectMethod(mapObj2,
+//                                           env->GetMethodID(mapKlass, "put",
+//                                                            "<(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;>"));
+
     // 获取 hashmap的类
 //    jclass mapObjKlass = env->GetObjectClass(obj); // "java/util/HashMap"
 //    jobject mapObj1 = env->AllocObject(mapObjKlass); // 只申请内存
 //    jmethodID constructor = env->GetMethodID(mapObjKlass, "<init>", "()V ");
 //    jobject mapObj2 = env->NewObject(mapObjKlass, constructor);
+// TODO 尝试抛异常
     cout << "hello JNI!" << endl;
 }

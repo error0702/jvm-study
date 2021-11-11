@@ -30,7 +30,7 @@
 #define JNIIMPORT     __attribute__((visibility("default")))
 #define JNICALL
 
-typedef int jint;
+typedef int  ;
 #ifdef _LP64 /* 64-bit */
 typedef long jlong;
 #else
