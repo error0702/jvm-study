@@ -12,3 +12,8 @@
 5. 在 `jdk` 的 `$JAVA_HOME` 中将 `jni.h` 拷贝到工程项目中，并且按照第四步将 `jni.h` 文件增加到 `CMakeLists.txt` 中
 6. 同时 `jni.h` 中用到了 `jni_md.h` 的头文件。按照第五步的操作方式
 7. 编写 `.h` 头文件的实现。
+
+## jvm 在生成 static 与 实例对象的方法时的差异
+1. 首先如果是 `static` 的 `native` 方法, 参数名为 `jclass`. 换句话说 `jclass` 是拿到的被 `JNIHandles::make_local(klass)` 包装过的 `klass` 实例。
+也就是说实际拿到的实际是jvm 的 `mirrorklass` 对象。至于为什么是JNIHandles包装后的，后续在 `OOP二分模型` 章节中会描述。此处不在赘述
+2. 
