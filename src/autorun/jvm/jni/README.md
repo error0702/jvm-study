@@ -16,4 +16,15 @@
 ## jvm 在生成 static 与 实例对象的方法时的差异
 1. 首先如果是 `static` 的 `native` 方法, 参数名为 `jclass`. 换句话说 `jclass` 是拿到的被 `JNIHandles::make_local(klass)` 包装过的 `klass` 实例。
 也就是说实际拿到的实际是jvm 的 `mirrorklass` 对象。至于为什么是JNIHandles包装后的，后续在 `OOP二分模型` 章节中会描述。此处不在赘述
-2. 
+
+## 编译环节
+1. 编译 `so` 文件. 如果是c语言也就是.c文件编译时使用
+`gcc --dynamiclib sourceFile -o targetFile`
+如果是c++ 则将上面命令中的
+`gcc` 替换为 `g++` 即可。
+
+## 加载环节
+1. 编写java代码，加载时可以使用 `System.load(file)` 或者使用 `System.loadLibrary(libname)` 加载对应的本地包
+
+`System.load(file)` 和 `System.loadLibrary(libname)` 差别。参考如下链接</br>
+[Java System.load() 与 System.loadLibrary() 区别解析](https://www.jianshu.com/p/c8a575ad344f)
