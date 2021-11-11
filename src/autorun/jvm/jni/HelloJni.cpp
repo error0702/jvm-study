@@ -7,5 +7,26 @@ using namespace std;
 
 JNIEXPORT void JNICALL Java_HelloJni_hello(JNIEnv *env, jobject obj)
 {
+    // c语言写法
+//    jclass jclass1 = (*env).GetObjectClass(obj);
+//    // c++写法
+//    jclass jclass2 = env->GetObjectClass(obj);
+//
+//    cout << jclass1 << endl;
+//    cout << jclass2 << endl;
+
+
+    jclass mapKlass = env->FindClass("java/util/HashMap");
+    jmethodID constructor = env->GetMethodID(mapKlass, "<init>", "()V");
+    jobject mapObj2 = env->NewObject(mapKlass, constructor);
+
+    // toString()Ljava/lang/String;
+    jobject toStringRst = env->CallObjectMethod(mapObj2, env->GetMethodID(mapKlass, "toString", "()Ljava/lang/String;"));
+    cout << toStringRst << endl;
+    // 获取 hashmap的类
+//    jclass mapObjKlass = env->GetObjectClass(obj); // "java/util/HashMap"
+//    jobject mapObj1 = env->AllocObject(mapObjKlass); // 只申请内存
+//    jmethodID constructor = env->GetMethodID(mapObjKlass, "<init>", "()V ");
+//    jobject mapObj2 = env->NewObject(mapObjKlass, constructor);
     cout << "hello JNI!" << endl;
 }
