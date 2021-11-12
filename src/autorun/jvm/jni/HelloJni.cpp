@@ -26,11 +26,11 @@ JNIEXPORT void JNICALL Java_HelloJni_hello(JNIEnv *env, jobject obj)
 
     // call hashmap put
     // put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-    jint* value = new jint;
-    value = 5;
-    env->CallDoubleMethodA(mapObj2, env->GetMethodID(mapKlass, "put",
-                                                     "<(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;>"),
-                           value);
+//    jint* value = new jint;
+//    value = 5;
+//    env->CallDoubleMethodA(mapObj2, env->GetMethodID(mapKlass, "put",
+//                                                     "<(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;>"),
+//                           value);
 //    jobject putObj = env->CallObjectMethod(mapObj2,
 //                                           env->GetMethodID(mapKlass, "put",
 //                                                            "<(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;>"));
@@ -41,5 +41,7 @@ JNIEXPORT void JNICALL Java_HelloJni_hello(JNIEnv *env, jobject obj)
 //    jmethodID constructor = env->GetMethodID(mapObjKlass, "<init>", "()V ");
 //    jobject mapObj2 = env->NewObject(mapObjKlass, constructor);
 // TODO 尝试抛异常
+
+env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "c++ throw exception!");
     cout << "hello JNI!" << endl;
 }
