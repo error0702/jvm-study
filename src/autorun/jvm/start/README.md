@@ -139,6 +139,7 @@ ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
       pthread_attr_setstacksize(&attr, stack_size);
     }
 
+    // 使用pthread_create系统函数创建新线程去执行JavaMain方法 如果线程创建成功 则返回值为0
     if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0) {
       void * tmp;
       // 让出当前线程执行权， 参考`java.lang.Thread.join()` 方法
