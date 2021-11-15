@@ -13,6 +13,15 @@
 6. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
 7. -> `pthread_join() pthread_join.c`
 
+##### 1.1.1 解析启动参数 
+[CreateExecutionEnvironment](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/bin/java.c#L236)
+```C++
+// 创建运行时环境 根据启动参数创建32或64位虚拟机, 获取JRE路径, 获取JVM路径 
+CreateExecutionEnvironment(&argc, &argv,
+                               jrepath, sizeof(jrepath),
+                               jvmpath, sizeof(jvmpath),
+                               jvmcfg,  sizeof(jvmcfg));
+```                               
 #### 1.2 call `JLI_Launch`
 > 主要作用: 
 1. 进行 `libjvm.so` 加载。</br>
@@ -130,6 +139,7 @@ ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
       pthread_attr_setstacksize(&attr, stack_size);
     }
 
+    // 使用pthread_create系统函数创建新线程去执行JavaMain方法 如果线程创建成功 则返回值为0
     if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0) {
       void * tmp;
       // 让出当前线程执行权， 参考`java.lang.Thread.join()` 方法
