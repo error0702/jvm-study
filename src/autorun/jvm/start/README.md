@@ -3,7 +3,7 @@
 ## jvm 启动流程 (linux_x86_64)
 
 
-### 1. 上流程
+### 1. 启动流程
 #### 1.1 init SubThread call JavaMain
 1. `main(int argc, char **argv) main.c`
 2. -> `JLI_Launch()   java.c`
@@ -15,12 +15,56 @@
 
 #### 1.2 call `JLI_Launch`
 > 主要作用: 
-> 1. 进行 `libjvm.so` 加载。</br>
-> 2. 编译的 `jvm.cpp` 文件 命令类似于
+1. 进行 `libjvm.so` 加载。</br>
+2. 编译的 `jvm.cpp` 文件 命令类似于
 > `g++ --dynamiclib src -o target`. 
 参考 [jni 编译环节](../jni/README.md "编译环节")
-> 
+3. `JLI_Launch` 会调用 `LoadJavaVM(jvmpath, &ifn)` 来实现`libjvm.so`的加载、
+参数解析、ClassPath的获取和设置、系统属性设置以及jvm的初始化
+4. *ifn是一个很关键的结构体。位于 `jdk/src/share/bin/java.h` 中
+```c++
+typedef struct {
+    CreateJavaVM_t CreateJavaVM;
+    GetDefaultJavaVMInitArgs_t GetDefaultJavaVMInitArgs;
+    GetCreatedJavaVMs_t GetCreatedJavaVMs;
+} InvocationFunctions;
+```
+可以看到，里面定义了3个函数指针，具体实现在 `jvm.cpp` 中。在加载完毕后jvm通过
 
+`libjvm = dlopen(jvmpath, RTLD_NOW + RTLD_GLOBAL);` 加载 `libjvm.so` 动态链接库(linux). windows 则是dll文件
+> 参考 [dlopen 函数定义](https://baike.baidu.com/item/dlopen/1967576?fr=aladdin)
+5. 当 `libjvm.so` 动态链接库加载完成后接下来会调用 
+`dlsym(libjvm, "JNI_CreateJavaVM");`</br>
+`dlsym(libjvm, "JNI_GetDefaultJavaVMInitArgs");`</br>
+`dlsym(libjvm, "JNI_GetCreatedJavaVMs");`</br>
+给上面提到的`InvocationFunctions` 的`CreateJavaVM`、`GetDefaultJavaVMInitArgs` 和 `GetCreatedJavaVMs` 赋值首地址。以实现方法调用
+
+> 摘自 `java_md_solinux.c`
+```c++
+ifn->CreateJavaVM = (CreateJavaVM_t)
+        dlsym(libjvm, "JNI_CreateJavaVM");
+    if (ifn->CreateJavaVM == NULL) {
+        JLI_ReportErrorMessage(DLL_ERROR2, jvmpath, dlerror());
+        return JNI_FALSE;
+    }
+
+    ifn->GetDefaultJavaVMInitArgs = (GetDefaultJavaVMInitArgs_t)
+        dlsym(libjvm, "JNI_GetDefaultJavaVMInitArgs");
+    if (ifn->GetDefaultJavaVMInitArgs == NULL) {
+        JLI_ReportErrorMessage(DLL_ERROR2, jvmpath, dlerror());
+        return JNI_FALSE;
+    }
+
+    ifn->GetCreatedJavaVMs = (GetCreatedJavaVMs_t)
+        dlsym(libjvm, "JNI_GetCreatedJavaVMs");
+    if (ifn->GetCreatedJavaVMs == NULL) {
+        JLI_ReportErrorMessage(DLL_ERROR2, jvmpath, dlerror());
+        return JNI_FALSE;
+    }
+```
+
+### 4. 附录
+1. jvm `main.c` 代码(摘自 `openjdk 1.8_b120`) 
 ```c++
 
 #ifdef _MSC_VER
