@@ -42,6 +42,8 @@ JNIEXPORT void JNICALL Java_HelloJni_hello(JNIEnv *env, jobject obj)
 //    jobject mapObj2 = env->NewObject(mapObjKlass, constructor);
 // TODO 尝试抛异常
 
+;
+cout << "version: " << env->GetVersion() << endl;
 env->ThrowNew(env->FindClass("java/lang/RuntimeException"), "c++ throw exception!");
     cout << "hello JNI!" << endl;
 }
