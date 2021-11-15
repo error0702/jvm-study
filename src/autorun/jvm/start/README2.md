@@ -14,6 +14,7 @@
 可以看到， 实际调用了 `thread.cpp` 中的 `Threads::create_vm()` 方法
 
 2. `Threads::create_vm()`
+#### 注：省略部分源码。如果需要查看请移步 `src/hotspot/share/runtime/thread.cpp`
 > 源码位置: thread.cpp
 ```c++
 // Initialize library-based TLS
@@ -45,6 +46,26 @@
 
   // Make sure to initialize log configuration *before* parsing arguments
   LogConfiguration::initialize(create_vm_timer.begin_time());
+
+  SafepointMechanism::initialize();
+
+  // Convert -Xrun to -agentlib: if there is no JVM_OnLoad
+  // Must be before create_vm_init_agents()
+  if (Arguments::init_libraries_at_startup()) {
+  convert_vm_init_libraries_to_agents();
+  }
+
+  // Launch -agentlib/-agentpath and converted -Xrun agents
+  if (Arguments::init_agents_at_startup()) {
+  create_vm_init_agents();
+  }
+
+  // Initialize Threads state
+  _number_of_threads = 0;
+  _number_of_non_daemon_threads = 0;
+
+  // Initialize global data structures and create system classes in heap
+  vm_init_globals();
 ```
 总体来说是初始化了系统的环境变量、线程私有存储，设置了标准输入和输出等。
 
@@ -87,3 +108,4 @@ PropertyList_add(&_system_properties, new SystemProperty("java.vm.specification.
   PropertyList_add(&_system_properties,
       new SystemProperty("java.vm.vendor", VM_Version::vm_vendor(),  false));
 ```
+
