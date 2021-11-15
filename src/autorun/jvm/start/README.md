@@ -151,7 +151,7 @@ ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
 2. 使用创建的线程去回调 `continuation`, `continuation` 为 `JavaMain`
 > rslt = ContinueInNewThread0(JavaMain, threadStackSize, (void*)&args);
 
-### 4. 附录
+### 3. 附录
 1. jvm `main.c` 代码(摘自 `openjdk 1.8_b120`) 
 ```c++
 
