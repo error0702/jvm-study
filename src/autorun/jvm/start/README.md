@@ -14,7 +14,12 @@
 7. -> `pthread_join() pthread_join.c`
 
 #### 1.2 call `JLI_Launch`
-
+> 主要作用: 
+> 1. 进行 `libjvm.so` 加载。</br>
+> 2. 编译的 `jvm.cpp` 文件 命令类似于
+> `g++ --dynamiclib src -o target`. 
+参考 [jni 编译环节](../jni/README.md "编译环节")
+> 
 
 ```c++
 
