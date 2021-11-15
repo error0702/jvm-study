@@ -62,6 +62,94 @@ ifn->CreateJavaVM = (CreateJavaVM_t)
         return JNI_FALSE;
     }
 ```
+6. JVMInit() 函数
+> 源码位置: jdk/src/solaris/bin/java_md_solinux.c
+```c++
+int
+JVMInit(InvocationFunctions* ifn, jlong threadStackSize,
+        int argc, char **argv,
+        int mode, char *what, int ret)
+{
+    ShowSplashScreen();
+    return ContinueInNewThread(ifn, threadStackSize, argc, argv, mode, what, ret);
+}
+```
+7. ContinueInNewThread() 函数
+> 源码位置: jdk/src/share/bin/java.c
+```c++
+int
+ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
+                    int argc, char **argv,
+                    int mode, char *what, int ret)
+{
+
+    /*
+     * If user doesn't specify stack size, check if VM has a preference.
+     * Note that HotSpot no longer supports JNI_VERSION_1_1 but it will
+     * return its default stack size through the init args structure.
+     */
+    if (threadStackSize == 0) {
+      struct JDK1_1InitArgs args1_1;
+      memset((void*)&args1_1, 0, sizeof(args1_1));
+      args1_1.version = JNI_VERSION_1_1;
+      ifn->GetDefaultJavaVMInitArgs(&args1_1);  /* ignore return value */
+      if (args1_1.javaStackSize > 0) {
+         threadStackSize = args1_1.javaStackSize;
+      }
+    }
+
+    { /* Create a new thread to create JVM and invoke main method */
+      JavaMainArgs args;
+      int rslt;
+
+      args.argc = argc;
+      args.argv = argv;
+      args.mode = mode;
+      args.what = what;
+      args.ifn = *ifn;
+
+      // 创建子线程调用Java主类的mian() 方法
+      rslt = ContinueInNewThread0(JavaMain, threadStackSize, (void*)&args);
+      /* If the caller has deemed there is an error we
+       * simply return that, otherwise we return the value of
+       * the callee
+       */
+      return (ret != 0) ? ret : rslt;
+    }
+}
+```
+8. ContinueInNewThread0() 函数
+> 源码位置: jdk/src/solaris/bin/java_md_solinux.c
+```c++
+    pthread_t tid;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+    if (stack_size > 0) {
+      pthread_attr_setstacksize(&attr, stack_size);
+    }
+
+    if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0) {
+      void * tmp;
+      // 让出当前线程执行权， 参考`java.lang.Thread.join()` 方法
+      pthread_join(tid, &tmp);
+      rslt = (int)tmp;
+    } else {
+     /*
+      * Continue execution in current thread if for some reason (e.g. out of
+      * memory/LWP)  a new thread can't be created. This will likely fail
+      * later in continuation as JNI_CreateJavaVM needs to create quite a
+      * few new threads, anyway, just give it a try..
+      */
+      rslt = continuation(args);
+    }
+
+    pthread_attr_destroy(&attr);
+```
+1. 使用pThread库创建线程。并将当前线程执行权让出。
+2. 使用创建的线程去回调 `continuation`, `continuation` 为 `JavaMain`
+> rslt = ContinueInNewThread0(JavaMain, threadStackSize, (void*)&args);
 
 ### 4. 附录
 1. jvm `main.c` 代码(摘自 `openjdk 1.8_b120`) 
