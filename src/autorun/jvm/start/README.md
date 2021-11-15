@@ -12,6 +12,7 @@
 5. -> `ContinueInNewThread0() java_md_solinux.c`
 6. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
 7. -> `pthread_join() pthread_join.c`
+8. -> `JavaMain() java.c`
 
 ##### 1.1.1 解析启动参数 
 [CreateExecutionEnvironment](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/bin/java.c#L236)
