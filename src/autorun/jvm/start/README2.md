@@ -50,7 +50,6 @@
 
 `MACOS_AARCH64_ONLY(os::current_thread_enable_wx(WXWrite));` 对m1的支持
 
-
 源码位置: hotspot/src/share/vm/runtime/arguments.cpp
 Arguments::init_system_properties();
 ```c++
