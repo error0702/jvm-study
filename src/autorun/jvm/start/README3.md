@@ -69,6 +69,7 @@ for (int i = T_BOOLEAN; i <= T_CONFLICT; i++) {
       assert(type2size[vt] == type2size[ft], "");
 }
 ```
+> 压缩指针选项
 ```c++
 if (UseCompressedOops) {
     // Size info for oops within java objects is fixed
