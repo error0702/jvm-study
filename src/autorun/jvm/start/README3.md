@@ -1,6 +1,7 @@
 # 本期主题 `vm_init_globals();`
 
-源码位置: `hotspot/src/share/vm/runtime/init.cpp`
+## 1. 主流程
+1. 源码位置: `hotspot/src/share/vm/runtime/init.cpp`
 ```c++
 check_ThreadShadow();
 basic_types_init();
@@ -9,8 +10,7 @@ mutex_init();
 chunkpool_init();
 perfMemory_init();
 ```
-
-1. `basic_types_init`主要用于java初始化基础类型
+`basic_types_init`主要用于java初始化基础类型
 源码位置：hotspot/src/share/vm/utilities/globalDefinitions.hpp
 
 > `void basic_types_init()`
@@ -87,10 +87,10 @@ if (UseCompressedOops) {
   _type2aelembytes[T_OBJECT] = heapOopSize;
   _type2aelembytes[T_ARRAY]  = heapOopSize;
 ```
-eventlog_init();
+3. eventlog_init();
 
 
-锁类型初始化 `mutex_init();`
+4. 锁类型初始化 `mutex_init();`
 ```c++
 def(tty_lock                     , Mutex  , event,       true ); // allow to lock in VM
 
@@ -205,3 +205,5 @@ def(tty_lock                     , Mutex  , event,       true ); // allow to loc
   def(JfrStacktrace_lock           , Mutex,   special,     true );
 #endif
 ```
+
+内存池初始化 `chunkpool_init()` 
