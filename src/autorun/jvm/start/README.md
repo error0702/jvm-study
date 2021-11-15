@@ -157,12 +157,12 @@ ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
 
     pthread_attr_destroy(&attr);
 ```
-1. 使用pThread库创建线程。并将当前线程执行权让出。
+1. 使用pthread库创建线程。并将当前线程执行权让出。
 2. 使用创建的线程去回调 `continuation`, `continuation` 为 `JavaMain`
 > rslt = ContinueInNewThread0(JavaMain, threadStackSize, (void*)&args);
 
-### 启动流程图
-![流程图](img/jvm启动流程图1.png)
+### 启动流程图 (待补充)
+<!-- ![流程图](img/jvm启动流程图1.png) -->
 
 ### 3. 附录
 1. jvm `main.c` 代码(摘自 `openjdk 1.8_b120`) 
