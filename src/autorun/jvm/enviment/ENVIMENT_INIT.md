@@ -1,6 +1,7 @@
 # hotspot 调试环境搭建
 
 ## openjdk 编译步骤
+### 以jdk1.8为例
 1. 安装Ubuntu环境(我这里使用20.04版本，不过版本最好高于16+以上，x86_64环境)
 2. 使用终端更新依赖
 > `sudo apt upgrade & sudo apt update`
@@ -9,4 +10,56 @@
 > `sudo apt install libx11-dev libxext-dev libxrender-dev libxtst-dev libxt-dev libcups2-dev libfreetype6-dev libasound2-dev ccache`
 
 > `apt` 命令同理
-4. 
+4. 安装 `git` (推荐) 或者 `hg` 工具用于克隆代码(二选其一即可)
+> sudo apt install git / sudo apt install
+> 
+安装 `mercurial` (也就是hg命令，同上，二选其一即可)
+```shell
+sudo add-apt-repository -y ppa:mercurial-ppa/releases
+sudo apt update
+sudo apt install -y python-pip python-dev
+sudo pip install mercurial --upgrade
+```
+> git 仓库地址: `https://github.com/openjdk/jdk/tree/jdk8-b120`
+
+> hg 仓库地址: `http://hg.openjdk.java.net/jdk8u/jdk8u/`
+5. 克隆 `openjdk` 源码
+如果是git用户, 使用 `git clone -b jdk8-b120 git@github.com:openjdk/jdk.git` 命令克隆(推荐)
+
+如果是hg用户则使用 `hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/` </br>
+即可以下载到openjdk的源码.
+下载完成之后cd 到对应目录中
+6. 给 `configure` 脚本增加执行权限
+> chmod u+x ./configure
+
+7. 下载bootJDK.
+> 使用Oracle的jdk7或者openjdk皆可, 我这里选择Oracle的jdk</br>
+> jdk下载地址: [下载链接](http://jdk.java.net/java-se-ri/7)
+
+8. 配置 `bootJDK` 环境变量(将 `{base_path}` 替换成你自己的路径即可)
+
+`sudo vim /etc/profile` # 将配置追加到你的profile文件末尾。使用 `G` 命令在vim的命令模式下快速跳转到文件末尾。然后使用 `O` 插入
+```shell
+export JAVA_HOME={base_path}/jdk1.7.0_80
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
+```
+然后使用 `:wq` 保存, 使用 `source` 命令使配置生效 `source /etc/profile`
+
+9. 准备编译openJDK环境</br>
+`./configure --with-target-bits=64 --with-boot-jdk={base_path}/jdk1.7.0_80 --with-debug-level=slowdebug --enable-debug-symbols ZIP_DEBUGINFO_FILES=0`</br>
+附录中会贴出 `configure` 命令所支持的参数。现在可以先这么用</br>
+如果出现如下提示则配置成功
+![img](./img/config_succ.png)
+
+
+1
+
+
+1
+
+
+1
+
+
+1
