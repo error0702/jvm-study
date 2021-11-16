@@ -32,7 +32,11 @@ CreateExecutionEnvironment(&argc, &argv,
                                jvmpath, sizeof(jvmpath),
                                jvmcfg,  sizeof(jvmcfg));
 ```
-
+> 检查JRE环境和 `libjvm.so` (linux) 或者 `libjvm.dll` (windows) 或者 libjvm.dylib (macos) 文件是否存在。如果不存在则结束。抛出异常
+> 
+> JRE环境未找到错误信息模板: "Error: Could not find Java SE Runtime Environment."
+> 
+> libjvm动态链接库未找到错误信息模板: "Error: missing `%s' JVM at `%s'.\nPlease install or use the JRE or JDK that contains these missing components." 
 ```c++
 /* Compute/set the name of the executable */
 -> SetExecname(char **argv)
