@@ -110,7 +110,7 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 > 使用命令: `java -XX:+PrintFlagsFinal -version | wc -l` 可以统计出，product版本的虚拟机参数仅仅有700多个, 而debug版本的参数足足有1300+ </br>
 > `--with-alsa=path` 这个说的是据说有个更高级的架构叫ALSA. </br>
 > `--with-boot-jdk=path` 指定bootJDK地址, 用来编译OpenJDK源码里的Java代码</br>
-![img](./img/languages_label.png)
+![img](./img/languages_label.png) </br>
 > 通过上图可以看到, jvm的代码中 `java` 代码的占比是大头。 所以还是要学好java。不要舍本逐末, java YYDS~ </br>
 > `--with-debug-level=level` 可以指定打某一个版本的包。参数值有 `release`、`fastdebug`、`slowdebug`, 默认值: `release`</br>
 > `--with-freetype=path` 可以指定字体库位置。如果不是使用apt安装的话</br>
