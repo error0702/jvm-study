@@ -83,6 +83,8 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 
 12. 关于 `configure` 脚本和 `make` 的说明
 
+#### configure 说明
+
 |OpenJDK Configure Option | Description |
 |:----:|:----:|
 | --enable-debug | set the debug level to fastdebug (this is a shorthand for --with-debug-level=fastdebug) |
@@ -110,4 +112,16 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 > `--with-boot-jdk=path` 指定bootJDK地址, 用来编译OpenJDK源码里的Java代码
 ![img](./img/languages_label.png)
 > 通过上图可以看到, jvm的代码中 `java` 代码的占比是大头。 所以还是要学好java。不要舍本逐末, java YYDS~ </br>
-> 
+> `--with-debug-level=level` 可以指定打某一个版本的包。参数值有 `release`、`fastdebug`、`slowdebug`, 默认值: `release`</br>
+> `--with-freetype=path` 可以指定字体库位置。如果不是使用apt安装的话</br>
+> `--with-import-hotspot=path` 可以指定由历史构建来构建你的Hotspot，这样应该可以起到加速效果~</br>
+> `--with-target-bits=arg` 只支持32和64两个数值，代表操作系统和处理器的位数</br>
+> `--with-jvm-variants=variants` 编译JVM的模式，有server, client, kernel, zero and zeroshark 五种 ，默认server模式 </br>
+> `--with-memory-size=size` 编译时使用多大内存 </br>
+> `--with-msvcr-dll=path` 这个应该是Windows相关的。用于指定 `msvcr100.dll` 位置，如果在 Visual Studio 2010 环境中则会自动加载</br>
+> `--with-num-cores=cores` 编译时指定使用几个CPU数量 </br>
+
+#### make 说明
+|Make Target|Description|
+|:---:|:---:|
+| | |
