@@ -141,3 +141,5 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 [硬核子牙-手把手教你搭建单步调试openjdk环境（值得收藏）](https://mp.weixin.qq.com/s/ZMXEwCJCj_eXFkq8vw-JKA) </br>
 [jdk build readme file](http://hg.openjdk.java.net/jdk8/jdk8/raw-file/tip/README-builds.html#linux) </br>
 [老郑-openjdk 1.8 源码编译](https://juejin.cn/post/6905377760265863176) </br>
+
+下讲分享怎么通过gdb、ide调试Hotspot代码
