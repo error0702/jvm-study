@@ -47,10 +47,41 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 然后使用 `:wq` 保存, 使用 `source` 命令使配置生效 `source /etc/profile`
 
 9. 准备编译openJDK环境</br>
-`./configure --with-target-bits=64 --with-boot-jdk={base_path}/jdk1.7.0_80 --with-debug-level=slowdebug --enable-debug-symbols ZIP_DEBUGINFO_FILES=0`</br>
+> `./configure --with-target-bits=64 --with-boot-jdk={base_path}/jdk1.7.0_80 --with-debug-level=slowdebug --enable-debug-symbols ZIP_DEBUGINFO_FILES=0`</br>
+
 附录中会贴出 `configure` 命令所支持的参数。现在可以先这么用</br>
 如果出现如下提示则配置成功
 ![img](./img/config_succ.png)
+
+10. 开始编译openJDK</br>
+> `make all DISABLE_HOTSPOT_OS_VERSION_CHECK=OK ZIP_DEBUGINFO_FILES=0` </br>
+如果出现如下提示则编译成功
+![img](./img/build_succ.png)
+
+11. 编译中可能出现的一些问题
+    1. 报错信息1(这是我编译时候遇到最多的问题。后续有问题可以提issue. 我这边更新到文档中)
+    ```c++ 
+    make[6]: *** [/home/autorun/platform/source/jdk/hotspot/make/linux/makefiles/vm.make:297: precompiled.hpp.gch] Error 1
+    make[5]: *** [/home/autorun/platform/source/jdk/hotspot/make/linux/makefiles/top.make:119: the_vm] Error 2
+    make[4]: *** [/home/autorun/platform/source/jdk/hotspot/make/linux/Makefile:289: product] Error 2
+    make[3]: *** [Makefile:217: generic_build2] Error 2
+    make[2]: *** [Makefile:167: product] Error 2
+    make[1]: *** [HotspotWrapper.gmk:45: /home/autorun/platform/source/jdk/build/linux-x86_64-normal-server-release/hotspot/_hotspot.timestamp] Error 2
+    make: *** [/home/autorun/platform/source/jdk//make/Main.gmk:109: hotspot-only] Error 2
+    ``` 
+        解决方案: 降低g++和gcc版本即可。
+    ```shell
+    sudo apt install -y gcc-4.8
+    sudo apt install -y g++-4.8
+    # 重新建立软连接
+    cd /usr/bin             #进入/usr/bin文件夹下
+    sudo rm -r gcc          #移除之前的软连接
+    sudo ln -sf gcc-4.8 gcc #建立gcc4.8的软连接
+    sudo rm -r g++
+    sudo ln -sf g++-4.8 g++
+    ```
+
+12. 关于 `configure` 脚本和 `make` 
 
 
 1
