@@ -8,22 +8,13 @@
 1. `main(int argc, char **argv) main.c`
 2. -> `JLI_Launch()   java.c`
 3. -> `JVMInit()  java_md_solinux.c`
-4. -> `ContinueInNewThread()  java.c`
-5. -> `ContinueInNewThread0() java_md_solinux.c`
-6. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
-7. -> `pthread_join() pthread_join.c`
-8. -> `JavaMain() java.c`
-
-##### 1.1.1 解析启动参数 
-[CreateExecutionEnvironment](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/bin/java.c#L236)
-```C++
-// 创建运行时环境 根据启动参数创建32或64位虚拟机, 获取JRE路径, 获取JVM路径 
-CreateExecutionEnvironment(&argc, &argv,
-                               jrepath, sizeof(jrepath),
-                               jvmpath, sizeof(jvmpath),
-                               jvmcfg,  sizeof(jvmcfg));
-```                               
-#### 1.2 call `JLI_Launch`
+4. -> `CreateExecutionEnvironment() java_md_solinux.c`
+5. -> `ContinueInNewThread()  java.c`
+6. -> `ContinueInNewThread0() java_md_solinux.c`
+7. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
+8. -> `pthread_join() pthread_join.c`
+9. -> `JavaMain() java.c`
+#### 1.1 call `JLI_Launch`
 > 主要作用: 
 1. 进行 `libjvm.so` 加载。</br>
 2. 编译的 `jvm.cpp` 文件 命令类似于
@@ -32,6 +23,45 @@ CreateExecutionEnvironment(&argc, &argv,
 3. `JLI_Launch` 会调用 `LoadJavaVM(jvmpath, &ifn)` 来实现`libjvm.so`的加载、
 参数解析、ClassPath的获取和设置、系统属性设置以及jvm的初始化
 4. *ifn是一个很关键的结构体。位于 `jdk/src/share/bin/java.h` 中
+#### 1.2 解析启动参数
+[CreateExecutionEnvironment](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/bin/java.c#L236)
+```C++
+// 创建运行时环境 根据启动参数创建32或64位虚拟机, 获取JRE路径, 获取JVM路径 
+CreateExecutionEnvironment(&argc, &argv,
+                               jrepath, sizeof(jrepath),
+                               jvmpath, sizeof(jvmpath),
+                               jvmcfg,  sizeof(jvmcfg));
+```
+
+```c++
+/* Compute/set the name of the executable */
+-> SetExecname(char **argv)
+/* Find out where the JRE is that we will be using. */
+if (!GetJREPath(jrepath, so_jrepath, arch, JNI_FALSE) ) 
+    -> GetApplicationHome(char *buf, jint bufsize)
+        const char *execname = GetExecName(); $JAVA_HOME/bin/java
+        -> java.c 
+        char* CheckJvmType // client server 
+if (!GetJVMPath(jrepath, jvmtype, jvmpath, so_jvmpath, arch, 0 )) // 通过java命令的路径拼接libjvm.so路径
+// Does `/home/autorun/openjdk8/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/lib/amd64/server/libjvm.so' exist ... yes.
+    -> if (stat(jvmpath, &s) == 0) 
+        -> stat
+            /* Get file attributes for FILE and put them in BUF.  */
+            extern int stat (const char *__restrict __file,
+                    struct stat *__restrict __buf) __THROW __nonnull ((1, 2));
+/*
+* we seem to have everything we need, so without further ado
+* we return back, otherwise proceed to set the environment.
+*/
+mustsetenv = RequiresSetenv(wanted, jvmpath);
+    -> llp = getenv("LD_LIBRARY_PATH");
+        /* Return the value of envariable NAME, or NULL if it doesn't exist.  */
+        extern char *getenv (const char *__name) __THROW __nonnull ((1)) __wur;
+
+ifn.CreateJavaVM = 0;
+ifn.GetDefaultJavaVMInitArgs = 0;
+```
+
 ```c++
 typedef struct {
     CreateJavaVM_t CreateJavaVM;
