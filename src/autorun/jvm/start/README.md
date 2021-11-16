@@ -9,11 +9,13 @@
 2. -> `JLI_Launch()   java.c`
 3. -> `JVMInit()  java_md_solinux.c`
 4. -> `CreateExecutionEnvironment() java_md_solinux.c`
-5. -> `ContinueInNewThread()  java.c`
-6. -> `ContinueInNewThread0() java_md_solinux.c`
-7. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
-8. -> `pthread_join() pthread_join.c`
-9. -> `JavaMain() java.c`
+5. -> `GetJREPath() java_md_solinux.c`
+6. -> `GetJVMPath() java_md_solinux.c`
+7. -> `ContinueInNewThread()  java.c`
+8. -> `ContinueInNewThread0() java_md_solinux.c`
+9. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
+10. -> `pthread_join() pthread_join.c`
+11. -> `JavaMain() java.c`
 #### 1.1 call `JLI_Launch`
 > 主要作用: 
 1. 进行 `libjvm.so` 加载。</br>
