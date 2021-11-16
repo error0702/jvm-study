@@ -104,3 +104,6 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 | --with-x=path	| select the location of the X11 and xrender files.The XRender Extension Headers are required for building the OpenJDK on Solaris and Linux. The Linux header files are usually available from a "Xrender" development package, it's recommended that you try and use the package provided by the particular distribution of Linux that you are using. The Solaris XRender header files is included with the other X11 header files in the package SFWxwinc on new enough versions of Solaris and will be installed in /usr/X11/include/X11/extensions/Xrender.h or /usr/openwin/share/include/X11/extensions/Xrender.h |
 
 大概解释一下常用的几个参数: 挑出我认为比较实用的几个:
+> `--enable-debug` 等价于 `--with-debug-level=fastdebug`, 说到这里，编译时一定要选择debug的版本。要不然很多参数是无法使用的。</br> 
+> 使用命令: `java -XX:+PrintFlagsFinal -version | wc -l` 可以统计出，product版本的虚拟机参数仅仅有700多个, 而debug版本的参数足足有1300+ </br>
+> 
