@@ -81,16 +81,26 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
     sudo ln -sf g++-4.8 g++
     ```
 
-12. 关于 `configure` 脚本和 `make` 
+12. 关于 `configure` 脚本和 `make` 的说明
 
+|OpenJDK Configure Option | Description |
+|:----:|:----:|
+| --enable-debug | set the debug level to fastdebug (this is a shorthand for --with-debug-level=fastdebug) |
+| --with-alsa=path |  select the location of the Advanced Linux Sound Architecture (ALSA)Version 0.9.1 or newer of the ALSA files are required for building the OpenJDK on Linux. These Linux files are usually available from an "alsa" of "libasound" development package, and it's highly recommended that you try and use the package provided by the particular version of Linux that you are using.|
+| --with-boot-jdk=path | select the Bootstrap JDK |
+| --with-boot-jdk-jvmargs="args" | provide the JVM options to be used to run the Bootstrap JDK |
+| --with-cacerts=path | select the path to the cacerts file. See http://en.wikipedia.org/wiki/Certificate_Authority for a better understanding of the Certificate Authority (CA). A certificates file named "cacerts" represents a system-wide keystore with CA certificates. In JDK and JRE binary bundles, the "cacerts" file contains root CA certificates from several public CAs (e.g., VeriSign, Thawte, and Baltimore). The source contain a cacerts file without CA root certificates. Formal JDK builders will need to secure permission from each public CA and include the certificates into their own custom cacerts file. Failure to provide a populated cacerts file will result in verification errors of a certificate chain during runtime. By default an empty cacerts file is provided and that should be fine for most JDK developers.|
+| --with-cups=path | select the CUPS install location The Common UNIX Printing System (CUPS) Headers are required for building the OpenJDK on Solaris and Linux. The Solaris header files can be obtained by installing the package SFWcups from the Solaris Software Companion CD/DVD, these often will be installed into the directory /opt/sfw/cups.  The CUPS header files can always be downloaded from www.cups.org.|
+| --with-cups-include=path | select the CUPS include directory location|
+| --with-debug-level=level | select the debug information level of release, fastdebug, or slowdebug |
+| --with-dev-kit=path | select location of the compiler install or developer install location |
+| --with-freetype=path | select the freetype files to use.Expecting the freetype libraries under lib/ and the headers under include/. Version 2.3 or newer of FreeType is required. On Unix systems required files can be available as part of your distribution (while you still may need to upgrade them). Note that you need development version of package that includes both the FreeType library and header files. You can always download latest FreeType version from the FreeType website. Building the freetype 2 libraries from scratch is also possible, however on Windows refer to the Windows FreeType DLL build instructions. Note that by default FreeType is built with byte code hinting support disabled due to licensing restrictions. In this case, text appearance and metrics are expected to differ from Sun's official JDK build. See the SourceForge FreeType2 Home Page for more information. |
+|--with-import-hotspot=path | select the location to find hotspot binaries from a previous build to avoid building hotspot |
+| --with-target-bits=arg | select 32 or 64 bit build |
+| --with-jvm-variants=variants | select the JVM variants to build from, comma separated list that can include: server, client, kernel, zero and zeroshark |
+| --with-memory-size=size | select the RAM size that GNU make will think this system has |
+| --with-msvcr-dll=path | select the msvcr100.dll file to include in the Windows builds (C/C++ runtime library for Visual Studio).This is usually picked up automatically from the redist directories of Visual Studio 2010.|
+| --with-num-cores=cores | select the number of cores to use (processor count or CPU count) |
+| --with-x=path	| select the location of the X11 and xrender files.The XRender Extension Headers are required for building the OpenJDK on Solaris and Linux. The Linux header files are usually available from a "Xrender" development package, it's recommended that you try and use the package provided by the particular distribution of Linux that you are using. The Solaris XRender header files is included with the other X11 header files in the package SFWxwinc on new enough versions of Solaris and will be installed in /usr/X11/include/X11/extensions/Xrender.h or /usr/openwin/share/include/X11/extensions/Xrender.h |
 
-1
-
-
-1
-
-
-1
-
-
-1
+大概解释一下常用的几个参数: 挑出我认为比较实用的几个:
