@@ -15,6 +15,8 @@ perfMemory_init();
 
 > `void basic_types_init()`
 ```c++
+// Map BasicType to signature character
+char type2char_tab[T_CONFLICT+1]={ 0, 0, 0, 0, 'Z', 'C', 'F', 'D', 'B', 'S', 'I', 'J', 'L', '[', 'V', 0, 0, 0, 0, 0};
 enum BasicType {
   T_BOOLEAN     =  4,
   T_CHAR        =  5,
