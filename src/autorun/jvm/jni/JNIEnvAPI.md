@@ -65,7 +65,8 @@
 | `NewGlobalRef()`| `jobject` | 在全局区创建引用 |
 | `DeleteGlobalRef()`| `jobject` | 删除全局区引用 |
 | `DeleteLocalRef()`| `jobject` | 删除局部区引用 |
-| `IsSameObject()`| `jobject` | 删除局部区引用 |
+| `IsSameObject()`| `jboolean` | 比较俩对象是否相等 |
+| `NewLocalRef()`| `jobject` | 创建本地引用 |
 
 
 
