@@ -42,7 +42,7 @@
 |GetDoubleArrayElements |	jdoubleArray | jdouble |
  
 ### JNI相关函数
-> 参照 [jni.cpp](base/jni.h)
+> 参照 [jni.h](base/jni.h) ，或者jdk安装目录中 `include` 目录下的 `jni.h` 头文件
 
 | 函数名 | 返回值 | 描述 |
 | :---: | :---: | :---: |
