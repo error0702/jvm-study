@@ -67,6 +67,10 @@
 | `DeleteLocalRef()`| `jobject` | 删除局部区引用 |
 | `IsSameObject()`| `jboolean` | 比较俩对象是否相等 |
 | `NewLocalRef()`| `jobject` | 创建本地引用 |
+| `EnsureLocalCapacity()`| `jint` | 确保本地容量在参数capacity区间 |
+| `AllocObject()`| `jobject` | 根据jclass 分配对象空间 |
+| `NewObject()`| `jobject` | 根据jclass和method创建对象 |
+
 
 
 
