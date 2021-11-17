@@ -98,6 +98,9 @@
 | `GetArrayLength()`| `jsize` | 获取数组长度 |
 | `GetObjectArrayElement()`| `jobject` | 获取数组对象 |
 | `SetObjectArrayElement()`| `void` | 设置数组对象指定下标的值 |
+| `New*Array()`| `*` | 创建各种类型的数组对象 |
+| `Get*ArrayElements()`| `*` | 获取各种类型的数组对象 |
+| `Release*ArrayElements()`| `*` | 释放各种类型的数组对象 |
 
 
 
