@@ -56,6 +56,8 @@
 | `IsAssignableFrom()`| `jboolean` | 确定传入类的继承结构是否被包含在调用方内。参照 `java.lang.Class.isAssignableFrom()` |
 | `ToReflectedField()`| `jobject` | 反射获取字段 |
 | `Throw()`| `jint` | 抛出异常 |
+| `ThrowNew()`| `jint` | 抛出异常, 参数不同 |
+
 
 
 
