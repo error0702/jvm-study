@@ -73,6 +73,9 @@
 | `NewObjectV()`| `jobject` | 根据jclass和method创建对象, 通过`va_list` 传参 |
 | `NewObjectA()`| `jobject` | 根据jclass和method创建对象, 通过 `jvalue *args` 传参 |
 | `GetObjectClass()`| `jclass` | 通过对象获取其`jklass` 对象 |
+| `IsInstanceOf()`| `jboolean` | 比较实例 `Klass` 是否相同 |
+| `GetMethodID()`| `jmethodID` | 获取 `methodId` |
+
 
 
 
