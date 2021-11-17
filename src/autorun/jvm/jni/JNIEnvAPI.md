@@ -96,6 +96,8 @@
 | `GetStringUTFChars()`| `const char*` | `stringUTF`字符串转`char`数组 |
 | `ReleaseStringUTFChars()`| `void` | 释放 |
 | `GetArrayLength()`| `jsize` | 获取数组长度 |
+| `GetObjectArrayElement()`| `jobject` | 获取数组对象 |
+| `SetObjectArrayElement()`| `void` | 设置数组对象指定下标的值 |
 
 
 
