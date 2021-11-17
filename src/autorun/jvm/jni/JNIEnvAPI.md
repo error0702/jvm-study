@@ -50,6 +50,9 @@
 | `DefineClass()`| `jclass` | 加载类 |
 | `FindClass()`| `jclass` | 根据类名获取已加载的类 |
 | `FromReflectedMethod()`| `jmethodID` | 通过反射获取方法 |
+| `FromReflectedField()`| `jfieldID` | 通过反射获取字段 |
+| `ToReflectedMethod()`| `jobject` | 通过class,methodId,是否是静态获取方法 |
+| `GetSuperclass()`| `jclass` | 获取父类 |
 
 
 
