@@ -53,6 +53,7 @@
 | `FromReflectedField()`| `jfieldID` | 通过反射获取字段 |
 | `ToReflectedMethod()`| `jobject` | 通过class,methodId,是否是静态获取方法 |
 | `GetSuperclass()`| `jclass` | 获取父类 |
+| `IsAssignableFrom()`| `jboolean` | 确定传入类的继承结构是否被包含在调用方内。参照 `java.lang.Class.isAssignableFrom()` |
 
 
 
