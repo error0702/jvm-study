@@ -91,6 +91,10 @@
 | `GetStringLength()`| `jsize` | 获取`string`对象的长度, `jsize` 等同于 `jint` |
 | `GetStringChars()`| `const jchar*` | 获取`string`对象的值, 转为char数组类型 |
 | `ReleaseStringChars()`| `void` | 释放字符串空间 |
+| `NewStringUTF()`| `jstring` | 创建utf的 `string` 对象 |
+| `GetStringUTFLength()`| `jsize` | 获取 `stringUTF` 字符串对象的长度 |
+
+
 
 
 
