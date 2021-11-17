@@ -57,6 +57,8 @@
 | `ToReflectedField()`| `jobject` | 反射获取字段 |
 | `Throw()`| `jint` | 抛出异常 |
 | `ThrowNew()`| `jint` | 抛出异常, 参数不同 |
+| `ExceptionOccurred()`| `jthrowable` | 获取发生异常的信息 |
+
 
 
 
