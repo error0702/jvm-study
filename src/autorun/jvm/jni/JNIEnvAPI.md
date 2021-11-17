@@ -42,11 +42,13 @@
 |GetDoubleArrayElements |	jdoubleArray | jdouble |
  
 ### JNI相关函数
-> 参照 [jni.h](base/jni.h) ，或者jdk安装目录中 `include` 目录下的 `jni.h` 头文件
+> 参照 [jni.h](base/jni.h) `struct JNIEnv_` 部分，或者jdk安装目录中 `include` 目录下的 `jni.h` 头文件
 
 | 函数名 | 返回值 | 描述 |
 | :---: | :---: | :---: |
 | `GetVersion()`| `jint` | 获取版本号 |
+| `DefineClass()`| `jclass` | 加载类 |
+| `FindClass()`| `jclass` | 根据symbol name获取已加载的类 |
 | `DefineClass()`| `jclass` | 加载类 |
 
 
