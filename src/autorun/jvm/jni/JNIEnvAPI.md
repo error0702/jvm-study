@@ -42,6 +42,7 @@
 |GetDoubleArrayElements |	jdoubleArray | jdouble |
  
 ### JNI相关函数
+> 参照 [jni.cpp](base/jni.h)
 
 | 函数名 | 返回值 | 描述 |
 | :---: | :---: | :---: |
