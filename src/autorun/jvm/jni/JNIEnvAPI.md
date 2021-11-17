@@ -103,6 +103,7 @@
 | `Release*ArrayElements()`| `*` | 释放各种类型的数组对象 |
 | `Get*ArrayRegion()`| `*` | 获取各种类型数组的区域 |
 | `RegisterNatives()`| `*` | 注册本地方法 |
+| `UnregisterNatives()`| `*` | 卸载本地方法 |
 
 
 
