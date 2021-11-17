@@ -78,6 +78,10 @@
 | `CallObjectMethod()`| `jobject` | 根据 `methodId` 调用method |
 | `CallObjectMethodV()`| `jobject` | 根据 `methodId` 调用method, 含义同 `NewObjectV()` |
 | `CallObjectMethodA()`| `jobject` | 根据 `methodId` 调用method, 含义同 `NewObjectA()` |
+| `CallBooleanMethod()`| `jboolean` | 根据 `methodId` 调用boolean method |
+| `CallBooleanMethodV()`| `jboolean` | 根据 `methodId` 调用boolean method 含义同 `NewObjectV()`|
+| `CallBooleanMethodA()`| `jboolean` | 根据 `methodId` 调用boolean method 含义同 `NewObjectA()`|
+| `Call*MethodA()`| `jboolean` | 根据 `methodId` 调用 各种类型的method |
 
 
 
