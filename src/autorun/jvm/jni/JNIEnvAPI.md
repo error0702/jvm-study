@@ -58,6 +58,8 @@
 | `Throw()`| `jint` | 抛出异常 |
 | `ThrowNew()`| `jint` | 抛出异常, 参数不同 |
 | `ExceptionOccurred()`| `jthrowable` | 获取发生异常的信息 |
+| `ExceptionDescribe()`| `void` | 订阅异常, jvm内部会使用标准输出打印异常信息 |
+
 
 
 
