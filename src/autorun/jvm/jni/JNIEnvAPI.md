@@ -87,6 +87,9 @@
 | `Get*FieldID()`| `*` | 根据 `field` 获取各种类型的field信息 |
 | `Set*Field()`| `*` | 根据 `field` 设置各种类型的field值 |
 | `CallStatic*Method()`| `*` | 调用各种类型的静态java方法 |
+| `NewString()`| `jstring` | 创建`string`对象 |
+| `GetStringLength()`| `jsize` | 获取`string`对象的长度, `jsize` 等同于 `jint` |
+
 
 
 
