@@ -17,9 +17,6 @@
 #### 注：省略部分源码。如果需要查看请移步 `src/hotspot/share/runtime/thread.cpp`
 > 源码位置: thread.cpp
 ```c++
-// Initialize library-based TLS
-  ThreadLocalStorage::init();
-
   // Initialize the output stream module
   ostream_init();
 
@@ -35,6 +32,9 @@
   TraceVmCreationTime create_vm_timer;
   create_vm_timer.start();
 
+  // Initialize library-based TLS
+  ThreadLocalStorage::init();
+  
   // Initialize system properties.
   Arguments::init_system_properties();
 
