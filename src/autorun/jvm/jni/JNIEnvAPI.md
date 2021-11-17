@@ -60,6 +60,9 @@
 | `ExceptionOccurred()`| `jthrowable` | 获取发生异常的信息 |
 | `ExceptionDescribe()`| `void` | 订阅异常, jvm内部会使用标准输出打印异常信息 |
 | `FatalError()`| `void` | 致命错误, jvm会调用os dump现场 |
+| `PushLocalFrame()`| `jint` | //TODO ... |
+| `PopLocalFrame()`| `jint` | //TODO ... |
+| `NewGlobalRef()`| `jint` | //TODO ... |
 
 
 
