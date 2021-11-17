@@ -104,6 +104,8 @@
 | `Get*ArrayRegion()`| `*` | 获取各种类型数组的区域 |
 | `RegisterNatives()`| `*` | 注册本地方法 |
 | `UnregisterNatives()`| `*` | 卸载本地方法 |
+| `MonitorEnter()`| `*` | synchronized进入 |
+| `MonitorExit()`| `*` | synchronized退出 |
 
 
 
