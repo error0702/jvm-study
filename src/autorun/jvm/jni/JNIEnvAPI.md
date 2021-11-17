@@ -41,8 +41,11 @@
 |GetFloatArrayElements |	jfloatArray | jfloat |
 |GetDoubleArrayElements |	jdoubleArray | jdouble |
  
+### JNI相关函数
 
- 
+| 函数名 | 返回值 | 描述 |
+| :---: | :---: | :---: |
+| 
 
 ## 附录
 ### 参考文献</br>
