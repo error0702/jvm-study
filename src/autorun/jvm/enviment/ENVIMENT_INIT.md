@@ -59,7 +59,7 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 ![img](./img/build_succ.png)
 
 11. 编译中可能出现的一些问题
-    1. 报错信息1(这是我编译时候遇到最多的问题。后续有问题可以提issue. 我这边更新到文档中)
+- 报错信息1(这是我编译时候遇到最多的问题。后续有问题可以提issue. 我这边更新到文档中)
     ```c++ 
     make[6]: *** [/home/autorun/platform/source/jdk/hotspot/make/linux/makefiles/vm.make:297: precompiled.hpp.gch] Error 1
     make[5]: *** [/home/autorun/platform/source/jdk/hotspot/make/linux/makefiles/top.make:119: the_vm] Error 2
@@ -80,6 +80,21 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
     sudo rm -r g++
     sudo ln -sf g++-4.8 g++
     ```
+- 报错信息2 
+```
+*** This OS is not supported: Linux ght-VirtualBox 4.15.0-142-generic #146~16.04.1-Ubuntu SMP Tue Apr 13 09:27:15 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+make[5]: *** [check_os_version] Error 1
+make[4]: *** [linux_amd64_compiler2/fastdebug] Error 2
+make[3]: *** [generic_build2] Error 2
+make[2]: *** [debug] Error 2
+make[1]: *** [/home/ght/openjdk/build/linux-x86_64-normal-server-slowdebug/hotspot/_hotspot.timestamp] Error 2
+make: *** [hotspot-only] Error 2
+```
+
+修改`hotspot/make/linux/Makefile`中
+```bash
+SUPPORTED_OS_VERSION = 2.4% 2.5% 2.6% 3% 4% # 增加uname -a所指定的版本 上例中是4.15 增加4%即可
+```
 
 12. 关于 `configure` 脚本和 `make` 的说明
 
@@ -120,6 +135,7 @@ export PATH=$JAVA_HOME/bin:$ANT_HOME/bin:$PATH
 > `--with-memory-size=size` 编译时使用多大内存 </br>
 > `--with-msvcr-dll=path` 这个应该是Windows相关的。用于指定 `msvcr100.dll` 位置，如果在 Visual Studio 2010 环境中则会自动加载</br>
 > `--with-num-cores=cores` 编译时指定使用几个CPU数量 </br>
+
 
 #### make 说明
 |Make Target|Description|
