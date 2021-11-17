@@ -89,6 +89,8 @@
 | `CallStatic*Method()`| `*` | 调用各种类型的静态java方法 |
 | `NewString()`| `jstring` | 创建`string`对象 |
 | `GetStringLength()`| `jsize` | 获取`string`对象的长度, `jsize` 等同于 `jint` |
+| `GetStringChars()`| `const jchar*` | 获取`string`对象的值, 转为char数组类型 |
+| `ReleaseStringChars()`| `void` | 释放字符串空间 |
 
 
 
