@@ -48,8 +48,9 @@
 | :---: | :---: | :---: |
 | `GetVersion()`| `jint` | 获取版本号 |
 | `DefineClass()`| `jclass` | 加载类 |
-| `FindClass()`| `jclass` | 根据symbol name获取已加载的类 |
-| `DefineClass()`| `jclass` | 加载类 |
+| `FindClass()`| `jclass` | 根据类名获取已加载的类 |
+| `FromReflectedMethod()`| `jmethodID` | 通过反射获取方法 |
+
 
 
 ## 附录
