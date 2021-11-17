@@ -75,6 +75,9 @@
 | `GetObjectClass()`| `jclass` | 通过对象获取其`jklass` 对象 |
 | `IsInstanceOf()`| `jboolean` | 比较实例 `Klass` 是否相同 |
 | `GetMethodID()`| `jmethodID` | 获取 `methodId` |
+| `CallObjectMethod()`| `jobject` | 根据 `methodId` 调用method |
+| `CallObjectMethodV()`| `jobject` | 根据 `methodId` 调用method, 含义同 `NewObjectV()` |
+| `CallObjectMethodA()`| `jobject` | 根据 `methodId` 调用method, 含义同 `NewObjectA()` |
 
 
 
