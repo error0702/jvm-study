@@ -70,6 +70,9 @@
 | `EnsureLocalCapacity()`| `jint` | 确保本地容量在参数capacity区间 |
 | `AllocObject()`| `jobject` | 根据jclass 分配对象空间 |
 | `NewObject()`| `jobject` | 根据jclass和method创建对象 |
+| `NewObjectV()`| `jobject` | 根据jclass和method创建对象, 通过`va_list` 传参 |
+| `NewObjectA()`| `jobject` | 根据jclass和method创建对象, 通过 `jvalue *args` 传参 |
+| `GetObjectClass()`| `jclass` | 通过对象获取其`jklass` 对象 |
 
 
 
