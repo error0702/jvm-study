@@ -62,7 +62,9 @@
 | `FatalError()`| `void` | 致命错误, jvm会调用os dump现场 |
 | `PushLocalFrame()`| `jint` | //TODO ... |
 | `PopLocalFrame()`| `jint` | //TODO ... |
-| `NewGlobalRef()`| `jint` | //TODO ... |
+| `NewGlobalRef()`| `jobject` | 在全局区创建引用 |
+| `DeleteGlobalRef()`| `jobject` | 删除全局区引用 |
+| `DeleteLocalRef()`| `jobject` | 删除局部区引用 |
 
 
 
