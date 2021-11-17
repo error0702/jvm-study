@@ -102,10 +102,11 @@
 | `Get*ArrayElements()`| `*` | 获取各种类型的数组对象 |
 | `Release*ArrayElements()`| `*` | 释放各种类型的数组对象 |
 | `Get*ArrayRegion()`| `*` | 获取各种类型数组的区域 |
-| `RegisterNatives()`| `*` | 注册本地方法 |
-| `UnregisterNatives()`| `*` | 卸载本地方法 |
-| `MonitorEnter()`| `*` | synchronized进入 |
-| `MonitorExit()`| `*` | synchronized退出 |
+| `Set*ArrayRegion()`| `*` | 批量替换各类型数组的区域 |
+| `RegisterNatives()`| `jint` | 注册本地方法 |
+| `UnregisterNatives()`| `jint` | 卸载本地方法 |
+| `MonitorEnter()`| `jint` | synchronized进入 |
+| `MonitorExit()`| `jint` | synchronized退出 |
 
 
 
