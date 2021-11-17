@@ -95,6 +95,7 @@
 | `GetStringUTFLength()`| `jsize` | 获取 `stringUTF` 字符串对象的长度 |
 | `GetStringUTFChars()`| `const char*` | `stringUTF`字符串转`char`数组 |
 | `ReleaseStringUTFChars()`| `void` | 释放 |
+| `GetArrayLength()`| `jsize` | 获取数组长度 |
 
 
 
