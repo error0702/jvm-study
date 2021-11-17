@@ -82,9 +82,11 @@
 | `CallBooleanMethodV()`| `jboolean` | 根据 `methodId` 调用boolean method 含义同 `NewObjectV()`|
 | `CallBooleanMethodA()`| `jboolean` | 根据 `methodId` 调用boolean method 含义同 `NewObjectA()`|
 | `Call*Method()`| `jboolean` | 根据 `methodId` 调用 各种类型的method |
+| `CallNonvirtual*Method()`| `*` | 根据 `methodId` 调用 各种类型的非虚method |
 | `GetFieldID()`| `jfieldID` | 根据 `field` 获取field信息 |
 | `Get*FieldID()`| `*` | 根据 `field` 获取各种类型的field信息 |
 | `Set*Field()`| `*` | 根据 `field` 设置各种类型的field值 |
+| `CallStatic*Method()`| `*` | 调用各种类型的静态java方法 |
 
 
 
