@@ -107,6 +107,8 @@
 | `UnregisterNatives()`| `jint` | 卸载本地方法 |
 | `MonitorEnter()`| `jint` | synchronized进入 |
 | `MonitorExit()`| `jint` | synchronized退出 |
+| `GetJavaVM()`| `jint` | 获取javaVM对象, 设置到传入的指针中。成功返回0 |
+
 
 
 
