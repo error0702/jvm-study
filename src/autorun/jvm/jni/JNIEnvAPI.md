@@ -112,6 +112,7 @@
 | `GetPrimitiveArrayCritical()`| `void *` | 获取底层数组指针的地址 |
 | `ReleasePrimitiveArrayCritical()`| `void` | 根据地址释放数组 |
 | `GetStringCritical()`| `jchar *` | 获取字符串值 |
+| `ReleaseStringCritical()`| `void` | 释放字符串值 |
 
 
 
