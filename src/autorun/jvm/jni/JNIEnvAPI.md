@@ -119,6 +119,7 @@
 | `NewDirectByteBuffer()`| `jobject` | 创建直接内存的 `byteBuffer` |
 | `GetDirectBufferAddress()`| `void*` | 获取 `byteBuffer` 地址 |
 | `GetDirectBufferCapacity()`| `jlong` | 获取 `byteBuffer` 偏移量 |
+| `GetObjectRefType()`| `jobjectRefType` | 获取对象引用的类型 |
 
 
 
