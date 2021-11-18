@@ -116,6 +116,7 @@
 | `NewWeakGlobalRef()`| `jweak` | 创建全局虚引用 |
 | `DeleteWeakGlobalRef()`| `void` | 删除全局虚引用 |
 | `ExceptionCheck()`| `jboolean` | 获取异常栈 |
+| `NewDirectByteBuffer()`| `jobject` | 创建直接内存的 `byteBuffer` |
 
 
 
