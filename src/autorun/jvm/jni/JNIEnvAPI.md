@@ -114,6 +114,7 @@
 | `GetStringCritical()`| `jchar *` | 获取字符串值 |
 | `ReleaseStringCritical()`| `void` | 释放字符串值 |
 | `NewWeakGlobalRef()`| `jweak` | 创建全局虚引用 |
+| `DeleteWeakGlobalRef()`| `void` | 删除全局虚引用 |
 
 
 
