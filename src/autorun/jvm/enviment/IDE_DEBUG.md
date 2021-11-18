@@ -16,16 +16,14 @@ Eclipse是著名的跨平台的自由集成开发环境（IDE）。最初主要�
 接下来根据对应的平台选择对应的版本。这里不再赘述
 > 下载地址: [点此进入](https://www.eclipse.org/downloads/packages/)
 
-安装完毕后开启eclipse， 选择import 你编译好的openjdk
-![img](img/ide_debug_ec_1.png)
+1. 安装完毕后开启eclipse， 选择import 你编译好的openjdk
+<img src="img/ide_debug_ec_1.png" width="250" height="250">
 
-选择c/c++项目
 
-![img](img/ide_debug_ec_2.png)
+2. 选择c/c++项目 选择导入即可。
+<img src="img/ide_debug_ec_2.png" width="250" height="250">
 
-选择导入即可。
-
-接下来配置运行命令
+3. 接下来配置运行命令
 
 ![img](img/ide_debug_ec_3.png)
 
@@ -43,5 +41,14 @@ Eclipse是著名的跨平台的自由集成开发环境（IDE）。最初主要�
 
 Clion 是一款专为开发C及C++所设计的跨平台IDE。它是以IntelliJ为基础设计的，包含了许多智能功能来提高开发人员的生产力。CLion帮助开发人员使用智能编辑器来提高代码质量、自动代码重构并且深度整合CMake编译系统，从而提高开发人员的工作效率。
 > 下载地址: [点此进入](https://www.jetbrains.com/clion/)
+Clion 是一款专为开发C及C++所设计的跨平台IDE。它是以IntelliJ为基础设计的，包含了许多智能功能来提高开发人员的生产力。CLion帮助开发人员使用智能编辑器来提高代码质量、自动代码重构并且深度整合CMake编译系统，从而提高开发人员的工作效率。
 
+
+1. 导入openjdk
+<img src="https://user-images.githubusercontent.com/26846402/142371272-10502690-0f85-4b93-a775-6eecb66f1bf4.png" width="250" height="250">
+2. 索引完成之后生成CMakeLists.txt
+<img src="https://user-images.githubusercontent.com/26846402/142371528-e62a6dc2-5c3d-448b-8a71-bdc9b8be68b5.png" width="400" height="50">
+<img src="https://user-images.githubusercontent.com/26846402/142371552-b6545dc3-843f-4ba3-b839-d2d46aeef69f.png" width="700" height="100">
+<img src="https://user-images.githubusercontent.com/26846402/142371688-b8bc6cc0-4c06-4216-8e42-c418977436e8.png" width="500" height="500">
+<img src="https://user-images.githubusercontent.com/26846402/142372152-83123617-ed9f-4456-b35a-ed87d7962ca0.png" width="500" height="300">
 
