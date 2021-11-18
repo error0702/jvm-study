@@ -118,6 +118,7 @@
 | `ExceptionCheck()`| `jboolean` | 获取异常栈 |
 | `NewDirectByteBuffer()`| `jobject` | 创建直接内存的 `byteBuffer` |
 | `GetDirectBufferAddress()`| `void*` | 获取 `byteBuffer` 地址 |
+| `GetDirectBufferCapacity()`| `jlong` | 获取 `byteBuffer` 偏移量 |
 
 
 
