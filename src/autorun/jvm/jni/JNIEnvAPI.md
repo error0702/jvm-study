@@ -113,6 +113,7 @@
 | `ReleasePrimitiveArrayCritical()`| `void` | 根据地址释放数组 |
 | `GetStringCritical()`| `jchar *` | 获取字符串值 |
 | `ReleaseStringCritical()`| `void` | 释放字符串值 |
+| `NewWeakGlobalRef()`| `jweak` | 创建全局虚引用 |
 
 
 
