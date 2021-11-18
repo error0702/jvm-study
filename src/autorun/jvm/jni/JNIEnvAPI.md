@@ -111,6 +111,7 @@
 | `GetStringUTFRegion()`| `void` | 获取字符串中某一段数据设置到参数中的指针地址 |
 | `GetPrimitiveArrayCritical()`| `void *` | 获取底层数组指针的地址 |
 | `ReleasePrimitiveArrayCritical()`| `void` | 根据地址释放数组 |
+| `GetStringCritical()`| `jchar *` | 获取字符串值 |
 
 
 
