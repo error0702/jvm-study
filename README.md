@@ -1,6 +1,8 @@
 # jvm-study
 
-> 这是一个学习JVM源码的仓库
+> 这是一个学习JVM源码的仓库。
+> 
+> 如果想要贡献文章请提pr (Pull Request)，谢谢
 <hr>
 
 ## jvm 学习大纲
