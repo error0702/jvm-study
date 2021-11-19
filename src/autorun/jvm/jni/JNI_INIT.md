@@ -36,3 +36,13 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
 7. -> `jni_functions() jni.cpp`
 
 #### 1. 使用 `pthread_create` 回调 `JavaMain()` 参考 [8. ContinueInNewThread0() 函数](../start/README.md "8. ContinueInNewThread0() 函数")
+```c++
+/* Initialize the virtual machine */
+    start = CounterGet();
+    if (!InitializeJVM(&vm, &env, &ifn)) {
+        JLI_ReportErrorMessage(JVM_ERROR1);
+        exit(1);
+    }
+    ...
+```
+#### 
