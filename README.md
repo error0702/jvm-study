@@ -17,5 +17,6 @@
 
 
 ### 3. jvm启动流程剖析
-- [x] [3.1 jvm启动流程1](src/autorun/jvm/start/README.md) 
+- [x] [3.1 jvm启动流程1](src/autorun/jvm/start/README.md) </br>
+- [ ] [3.2 jvm启动流程2](src/autorun/jvm/start/README2.md) </br>
 
