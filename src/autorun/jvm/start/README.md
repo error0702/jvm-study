@@ -21,7 +21,7 @@
 1. 进行 `libjvm.so` 加载。</br>
 2. 编译的 `jvm.cpp` 文件 命令类似于
 > `g++ --dynamiclib src -o target`. 
-参考 [jni 编译环节](../jni/README.md "编译环节")
+参考 [jni 编译环节](../jni/README.md "#编译环节")
 3. `JLI_Launch` 会调用 `LoadJavaVM(jvmpath, &ifn)` 来实现`libjvm.so`的加载、
 参数解析、ClassPath的获取和设置、系统属性设置以及jvm的初始化
 4. *ifn是一个很关键的结构体。位于 `jdk/src/share/bin/java.h` 中
