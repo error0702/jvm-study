@@ -120,4 +120,42 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
   
   // ...
 ```
+#### 5. `JavaThread::JavaThread()`
 `JavaThread* main_thread = new JavaThread();` 会触发 `JavaThread::JavaThread()` 的构造函数调用。
+
+#### 6. `JavaThread::initialize()`
+```c++
+//...
+set_jni_functions(jni_functions());
+// ...
+```
+#### 7. `jni_functions()`
+`set_jni_functions(jni_functions());` 设置一堆初始化属性， 然后设置jni对应的方法。
+`jni_functions()` 所对应的数组
+```c++
+jni_NativeInterface = {
+    NULL,
+    NULL,
+    NULL,
+
+    NULL,
+
+    jni_GetVersion,
+
+    jni_DefineClass,
+    jni_FindClass,
+
+    jni_FromReflectedMethod,
+    jni_FromReflectedField,
+
+    jni_ToReflectedMethod,
+
+    jni_GetSuperclass,
+    jni_IsAssignableFrom,
+
+    jni_ToReflectedField,
+
+    jni_Throw,
+    jni_ThrowNew,
+    // ...
+```
