@@ -19,9 +19,8 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
     /* thread is thread_in_vm here */
     // jni_InvokeInterface 赋值。c语言环境中使用改变量。c++ 环境中使用JNIEnv
     *vm = (JavaVM *)(&main_vm); // main_vm定义在下面
-    // JNIEnv赋值。
+    // JNIEnv赋值。 由此处可以看出，JNIEnv其实是线程私有的。
     *(JNIEnv**)penv = thread->jni_environment();
-
     ...
 ```
 
