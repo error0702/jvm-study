@@ -34,3 +34,5 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
 5. -> `JavaThread::JavaThread()   thread.cpp`
 6. -> `JavaThread::initialize()   thread.cpp`
 7. -> `jni_functions() jni.cpp`
+
+#### 1. 使用 `pthread_create` 回调 `JavaMain()` 参考 [8. ContinueInNewThread0() 函数](../start/README.md "8. ContinueInNewThread0() 函数")
