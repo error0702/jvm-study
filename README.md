@@ -8,7 +8,7 @@
 
 ### 1. 编译JVM
 * [x] [1.1 OpenJDK编译教程](src/autorun/jvm/enviment/ENVIMENT_INIT.md)
-* [ ] [1.2 配置调试环境](src/autorun/jvm/enviment/IDE_DEBUG.md) </br>
+* [x] [1.2 配置调试环境](src/autorun/jvm/enviment/IDE_DEBUG.md) </br>
 
 ### 2. JNI
 - [x] [2.1 初识JNI](src/autorun/jvm/jni/README.md) </br>
