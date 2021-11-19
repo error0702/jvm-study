@@ -11,7 +11,8 @@ TARGET_FILE=HelloJni.so
 # use g++ in build cpp file
 g++ -dynamiclib $SOURCE_FILE -o $TARGET_PATH/$TARGET_FILE
 
-if [ $? == 0 ]; then
+# shellcheck disable=SC2181
+if [ 0 == $? ]; then
     echo 'build successfully'
 else
   echo 'build fail!'
