@@ -92,5 +92,6 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
     event.set_javalangthread(java_lang_Thread::thread_id(thread->threadObj()));
     event.commit();
     }
+    // ...
 ```
 #### 4. `Threads::create_vm()`
