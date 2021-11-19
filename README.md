@@ -1,5 +1,6 @@
 # jvm-study
 
+> 这是一个学习JVM源码的仓库
 <hr>
 
 ## jvm 学习大纲
