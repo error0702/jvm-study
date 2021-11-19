@@ -63,7 +63,7 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
 ```
 `r = ifn->CreateJavaVM(pvm, (void **)penv, &args);` [链接ifn参数](../start/README.md "#5. 当 `libjvm.so` 动态链接库加载完成后接下来会调用")
 #### 3. `JNI_CreateJavaVM()`
-调用 `jni.cpp` `JNICALL JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)`
+调用 `hotspot/src/share/vm/prims/jni.cpp` `JNICALL JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)`
 ```c++
     if (Atomic::xchg(1, &vm_created) == 1) {
         return JNI_EEXIST;   // already created, or create attempt in progress
@@ -95,3 +95,29 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
     // ...
 ```
 #### 4. `Threads::create_vm()`
+位于 `src/hotspot/share/runtime/thread.cpp`
+
+```c++
+// ...
+
+// Attach the main thread to this os thread
+  JavaThread* main_thread = new JavaThread();
+  main_thread->set_thread_state(_thread_in_vm);
+  main_thread->initialize_thread_current();
+  // must do this before set_active_handles
+  main_thread->record_stack_base_and_size();
+  main_thread->register_thread_stack_with_NMT();
+  main_thread->set_active_handles(JNIHandleBlock::allocate_block());
+  MACOS_AARCH64_ONLY(main_thread->init_wx());
+
+  if (!main_thread->set_as_starting_thread()) {
+    vm_shutdown_during_initialization(
+                                      "Failed necessary internal allocation. Out of swap space");
+    main_thread->smr_delete();
+    *canTryAgain = false; // don't let caller call JNI_CreateJavaVM again
+    return JNI_ENOMEM;
+  }
+  
+  // ...
+```
+`JavaThread* main_thread = new JavaThread();` 会触发 `JavaThread::JavaThread()` 的构造函数调用。
