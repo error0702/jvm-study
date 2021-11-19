@@ -45,4 +45,19 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
     }
     ...
 ```
-#### 
+#### 2. `InitializeJVM()` 
+```c++
+    // _JAVA_LAUNCHER_DEBUG=true
+    if (JLI_IsTraceLauncher()) {
+        int i = 0;
+        printf("JavaVM args:\n    ");
+        printf("version 0x%08lx, ", (long)args.version);
+        printf("ignoreUnrecognized is %s, ",
+        args.ignoreUnrecognized ? "JNI_TRUE" : "JNI_FALSE");
+        printf("nOptions is %ld\n", (long)args.nOptions);
+        for (i = 0; i < numOptions; i++)
+        printf("    option[%2d] = '%s'\n",
+        i, args.options[i].optionString);
+    }
+    r = ifn->CreateJavaVM(pvm, (void **)penv, &args);
+```
