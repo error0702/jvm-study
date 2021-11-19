@@ -16,15 +16,15 @@
 9. -> `if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0)`
 10. -> `pthread_join() pthread_join.c`
 11. -> `JavaMain() java.c`
-#### 1.1 call `JLI_Launch`
+##### 1.1 call `JLI_Launch`
 > 主要作用: 
-1. 进行 `libjvm.so` 加载。</br>
-2. 编译的 `jvm.cpp` 文件 命令类似于
+##### 1. 进行 `libjvm.so` 加载。</br>
+##### 2. 编译的 `jvm.cpp` 文件 命令类似于
 > `g++ --dynamiclib src -o target`. 
 参考 [jni 编译环节](../jni/README.md "#编译环节")
-3. `JLI_Launch` 会调用 `LoadJavaVM(jvmpath, &ifn)` 来实现`libjvm.so`的加载、
+##### 3. `JLI_Launch` 会调用 `LoadJavaVM(jvmpath, &ifn)` 来实现`libjvm.so`的加载、
 参数解析、ClassPath的获取和设置、系统属性设置以及jvm的初始化
-4. *ifn是一个很关键的结构体。位于 `jdk/src/share/bin/java.h` 中
+##### 4. *ifn是一个很关键的结构体。位于 `jdk/src/share/bin/java.h` 中
 #### 1.2 解析启动参数
 [CreateExecutionEnvironment](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/bin/java.c#L236)
 ```C++
@@ -79,7 +79,7 @@ typedef struct {
 
 `libjvm = dlopen(jvmpath, RTLD_NOW + RTLD_GLOBAL);` 加载 `libjvm.so` 动态链接库(linux). windows 则是dll文件
 > 参考 [dlopen 函数定义](https://baike.baidu.com/item/dlopen/1967576?fr=aladdin)
-5. 当 `libjvm.so` 动态链接库加载完成后接下来会调用 
+##### 5. 当 `libjvm.so` 动态链接库加载完成后接下来会调用 
 `dlsym(libjvm, "JNI_CreateJavaVM");`</br>
 `dlsym(libjvm, "JNI_GetDefaultJavaVMInitArgs");`</br>
 `dlsym(libjvm, "JNI_GetCreatedJavaVMs");`</br>
@@ -108,7 +108,7 @@ ifn->CreateJavaVM = (CreateJavaVM_t)
         return JNI_FALSE;
     }
 ```
-6. JVMInit() 函数
+##### 6. JVMInit() 函数
 > 源码位置: jdk/src/solaris/bin/java_md_solinux.c
 ```c++
 int
@@ -120,7 +120,7 @@ JVMInit(InvocationFunctions* ifn, jlong threadStackSize,
     return ContinueInNewThread(ifn, threadStackSize, argc, argv, mode, what, ret);
 }
 ```
-7. ContinueInNewThread() 函数
+##### 7. ContinueInNewThread() 函数
 > 源码位置: jdk/src/share/bin/java.c
 ```c++
 int
@@ -164,7 +164,7 @@ ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
     }
 }
 ```
-8. ContinueInNewThread0() 函数
+##### 8. ContinueInNewThread0() 函数
 > 源码位置: jdk/src/solaris/bin/java_md_solinux.c
 ```c++
     pthread_t tid;
