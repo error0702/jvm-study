@@ -31,6 +31,6 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
 2. -> `InitializeJVM() java.c`
 3. -> `JNI_CreateJavaVM() jni.cpp`
 4. -> `Threads::create_vm()       thread.cpp`
-5. -> `JavaThread::JavaThread()   thread.cpp`
+5. -> `JavaThread::current()   thread.cpp`
 6. -> `JavaThread::initialize()   thread.cpp`
 7. -> `jni_functions() jni.cpp`
