@@ -65,5 +65,32 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
 #### 3. `JNI_CreateJavaVM()`
 调用 `jni.cpp` `JNICALL JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args)`
 ```c++
-
+    if (Atomic::xchg(1, &vm_created) == 1) {
+        return JNI_EEXIST;   // already created, or create attempt in progress
+    }
+    if (Atomic::xchg(0, &safe_to_recreate_vm) == 0) {
+        return JNI_ERR;  // someone tried and failed and retry not allowed.
+    }
+    // ...
+    result = Threads::create_vm((JavaVMInitArgs*) args, &can_try_again);
+    if (result == JNI_OK) {
+    JavaThread *thread = JavaThread::current();
+    /* thread is thread_in_vm here */
+    *vm = (JavaVM *)(&main_vm);
+    *(JNIEnv**)penv = thread->jni_environment();
+    
+    // Tracks the time application was running before GC
+    RuntimeService::record_application_start();
+    
+    // Notify JVMTI
+    if (JvmtiExport::should_post_thread_life()) {
+    JvmtiExport::post_thread_start(thread);
+    }
+    
+    EventThreadStart event;
+    if (event.should_commit()) {
+    event.set_javalangthread(java_lang_Thread::thread_id(thread->threadObj()));
+    event.commit();
+    }
 ```
+#### 4. `Threads::create_vm()`
