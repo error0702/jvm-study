@@ -61,3 +61,6 @@ jni相关的类文件都在 `hotspot/src/share/vm/prims` 中，后续会出一�
     }
     r = ifn->CreateJavaVM(pvm, (void **)penv, &args);
 ```
+`r = ifn->CreateJavaVM(pvm, (void **)penv, &args);` [链接ifn参数](../start/README.md "#5. 当 `libjvm.so` 动态链接库加载完成后接下来会调用")
+#### 3. `JNI_CreateJavaVM()`
+
