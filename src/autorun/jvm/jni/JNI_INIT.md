@@ -159,3 +159,6 @@ jni_NativeInterface = {
     jni_ThrowNew,
     // ...
 ```
+
+## 流程图
+![img](img/JNI_INIT_process.png)
