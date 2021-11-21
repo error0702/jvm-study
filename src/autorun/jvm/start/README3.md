@@ -222,3 +222,11 @@ static void initialize() {
 ```
 
 性能内存 `perfMemory_init()`
+```c++
+void perfMemory_init() {
+
+  if (!UsePerfData) return;
+
+  PerfMemory::initialize();
+}
+```
