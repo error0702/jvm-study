@@ -210,3 +210,5 @@ def(tty_lock                     , Mutex  , event,       true ); // allow to loc
 ```
 
 内存池初始化 `chunkpool_init()` 
+
+`perfMemory_init()`
