@@ -307,3 +307,37 @@ void PerfMemory::initialize() {
   OrderAccess::release_store(&_initialized, 1);
 }
 ```
+
+
+```c++
+// create the PerfData memory region
+//
+// This method creates the memory region used to store performance
+// data for the JVM. The memory may be created in standard or
+// shared memory.
+//
+void PerfMemory::create_memory_region(size_t size) {
+
+  if (PerfDisableSharedMem) {
+    // do not share the memory for the performance data.
+    _start = create_standard_memory(size);
+  }
+  else {
+    _start = create_shared_memory(size);
+    if (_start == NULL) {
+
+      // creation of the shared memory region failed, attempt
+      // to create a contiguous, non-shared memory region instead.
+      //
+      if (PrintMiscellaneous && Verbose) {
+        warning("Reverting to non-shared PerfMemory region.\n");
+      }
+      PerfDisableSharedMem = true;
+      _start = create_standard_memory(size);
+    }
+  }
+
+  if (_start != NULL) _capacity = size;
+
+}
+```
