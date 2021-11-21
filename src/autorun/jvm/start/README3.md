@@ -309,6 +309,7 @@ void PerfMemory::initialize() {
 ```
 
 
+分配内存
 ```c++
 // create the PerfData memory region
 //
