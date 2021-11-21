@@ -212,4 +212,13 @@ def(tty_lock                     , Mutex  , event,       true ); // allow to loc
 内存池初始化 `chunkpool_init()` 
 `ChunkPool::initialize();`
 
+```c++
+static void initialize() {
+    _large_pool  = new ChunkPool(Chunk::size        + Chunk::aligned_overhead_size());
+    _medium_pool = new ChunkPool(Chunk::medium_size + Chunk::aligned_overhead_size());
+    _small_pool  = new ChunkPool(Chunk::init_size   + Chunk::aligned_overhead_size());
+    _tiny_pool   = new ChunkPool(Chunk::tiny_size   + Chunk::aligned_overhead_size());
+  }
+```
+
 性能内存 `perfMemory_init()`
