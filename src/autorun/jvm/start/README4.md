@@ -44,4 +44,16 @@ jint init_globals() {
   compilationPolicy_init();
   compileBroker_init();
   VMRegImpl::set_regName();
+    if (!universe_post_init()) {
+    return JNI_ERR;
+  }
+  javaClasses_init();   // must happen after vtable initialization
+  stubRoutines_init2(); // note: StubRoutines need 2-phase init
+
+  // All the flags that get adjusted by VM_Version_init and os::init_2
+  // have been set so dump the flags now.
+  if (PrintFlagsFinal) {
+    CommandLineFlags::printFlags(tty, false);
+  }
+}
 ```
