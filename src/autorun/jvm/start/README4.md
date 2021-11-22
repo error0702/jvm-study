@@ -38,5 +38,10 @@ jint init_globals() {
   referenceProcessor_init();
   jni_handles_init();
   vmStructs_init();
-
+  vtableStubs_init();
+  InlineCacheBuffer_init();
+  compilerOracle_init();
+  compilationPolicy_init();
+  compileBroker_init();
+  VMRegImpl::set_regName();
 ```
