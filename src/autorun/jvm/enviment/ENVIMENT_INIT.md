@@ -43,6 +43,7 @@ sudo pip install mercurial --upgrade
   请将 {base_path} 替换成你自己的路径！<br/>
   请将 {base_path} 替换成你自己的路径！<br/>
 </span>
+
 重要的事情说三遍!
 
 `sudo vim /etc/profile` # 将配置追加到你的profile文件末尾。使用 `G` 命令在vim的命令模式下快速跳转到文件末尾。然后使用 `O` 插入
