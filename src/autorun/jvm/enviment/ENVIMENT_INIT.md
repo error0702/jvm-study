@@ -38,11 +38,11 @@ sudo pip install mercurial --upgrade
 
 8. 配置 `bootJDK` 环境变量(将 `{base_path}` 替换成你自己的路径即可)
 
-<span style="color: red; ">
+<font color="red">
   请将 {base_path} 替换成你自己的路径！<br/>
   请将 {base_path} 替换成你自己的路径！<br/>
   请将 {base_path} 替换成你自己的路径！<br/>
-</span>
+</font>
 
 重要的事情说三遍!
 
