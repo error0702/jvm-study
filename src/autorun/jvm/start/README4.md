@@ -92,3 +92,5 @@ HandleMark hm;
 
 ### `universe2_init()`
 // dependent on codeCache_init and stubRoutines_init1
+
+### `referenceProcessor_init()`
