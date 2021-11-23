@@ -74,3 +74,6 @@ HandleMark hm;
 
 ### `interpreter_init()`
 // before any methods loaded
+
+### `invocationCounter_init()`
+// before any methods loaded
