@@ -64,5 +64,5 @@ HandleMark hm;
 ### `classLoader_init()`
 ### `codeCache_init()`
 ### `VM_Version_init()`
-os_init_globals();
+### `os_init_globals()`
 stubRoutines_init1();
