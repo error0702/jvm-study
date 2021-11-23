@@ -79,3 +79,6 @@ HandleMark hm;
 // before any methods loaded
 
 ### `marksweep_init()`
+
+
+### `accessFlags_init()`
