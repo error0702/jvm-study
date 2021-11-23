@@ -87,3 +87,5 @@ HandleMark hm;
 ### `templateTable_init()`
 
 ### `InterfaceSupport_init()`
+
+### `SharedRuntime::generate_stubs()`
