@@ -77,3 +77,5 @@ HandleMark hm;
 
 ### `invocationCounter_init()`
 // before any methods loaded
+
+### `marksweep_init()`
