@@ -89,3 +89,6 @@ HandleMark hm;
 ### `InterfaceSupport_init()`
 
 ### `SharedRuntime::generate_stubs()`
+
+### `universe2_init()`
+// dependent on codeCache_init and stubRoutines_init1
