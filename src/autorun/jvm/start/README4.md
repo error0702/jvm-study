@@ -82,3 +82,6 @@ HandleMark hm;
 
 
 ### `accessFlags_init()`
+
+
+### `templateTable_init()`
