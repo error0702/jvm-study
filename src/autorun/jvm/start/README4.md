@@ -85,3 +85,5 @@ HandleMark hm;
 
 
 ### `templateTable_init()`
+
+### `InterfaceSupport_init()`
