@@ -63,6 +63,6 @@ HandleMark hm;
 ### `bytecodes_init()`
 ### `classLoader_init()`
 ### `codeCache_init()`
-VM_Version_init();
+### `VM_Version_init()`
 os_init_globals();
 stubRoutines_init1();
