@@ -108,6 +108,7 @@ HandleMark hm;
 ### `compilationPolicy_init()`
 
 ### `compileBroker_init()`
+
 ### `VMRegImpl::set_regName()`
 ```c++
 if (!universe_post_init()) {
