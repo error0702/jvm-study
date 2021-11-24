@@ -102,6 +102,7 @@ HandleMark hm;
 ### `vtableStubs_init()`
 
 ### `InlineCacheBuffer_init()`
+
 ### `compilerOracle_init()`
 ### `compilationPolicy_init()`
 ### `compileBroker_init()`
