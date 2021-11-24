@@ -106,6 +106,7 @@ HandleMark hm;
 ### `compilerOracle_init()`
 
 ### `compilationPolicy_init()`
+
 ### `compileBroker_init()`
 ### `VMRegImpl::set_regName()`
 ```c++
