@@ -98,6 +98,7 @@ HandleMark hm;
 ### `jni_handles_init()`
 
 ### `vmStructs_init()`
+
 ### `vtableStubs_init()`
 ### `InlineCacheBuffer_init()`
 ### `compilerOracle_init()`
