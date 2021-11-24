@@ -109,5 +109,5 @@ if (!universe_post_init()) {
 return JNI_ERR;
 }
 ```
-javaClasses_init();   // must happen after vtable initialization
-stubRoutines_init2(); // note: StubRoutines need 2-phase init
+### `javaClasses_init()`   // must happen after vtable initialization
+### `stubRoutines_init2()` // note: StubRoutines need 2-phase init
