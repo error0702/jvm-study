@@ -5,3 +5,4 @@ target
 /dist/
 *.class
 cmake-build-debug
+*.out
