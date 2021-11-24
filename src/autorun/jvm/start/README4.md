@@ -94,3 +94,21 @@ HandleMark hm;
 // dependent on codeCache_init and stubRoutines_init1
 
 ### `referenceProcessor_init()`
+
+### `jni_handles_init()`
+
+### `vmStructs_init()`
+### `vtableStubs_init()`
+### `InlineCacheBuffer_init()`
+### `compilerOracle_init()`
+### `compilationPolicy_init()`
+### `compileBroker_init()`
+### `VMRegImpl::set_regName()`
+```c++
+if (!universe_post_init()) {
+return JNI_ERR;
+}
+
+```
+javaClasses_init();   // must happen after vtable initialization
+stubRoutines_init2(); // note: StubRoutines need 2-phase init
