@@ -9,8 +9,9 @@
 
 ### 1. `Threads::create_vm()`
 
+### 2. `init_globals()`
 
-
+### 3. `universe_init()`
 
 
 
