@@ -20,6 +20,12 @@
 如果启用了(默认启用) `PerfData` (参考jvm参数 `-XX:+UsePerfData`)， 则开启jvm内部数据收集。
 作用是动态的调整gc， 对象和jit相关的指标做垃圾回收
 
+> jdk8 默认使用 ParallelGC， 所以它会调用 
+```c++
+Universe::_collectedHeap = new ParallelScavengeHeap();
+Universe::heap()->initialize();
+```
+
 // check and init gc policy
 ```c++
   if (UseParallelGC) {
