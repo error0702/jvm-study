@@ -4,5 +4,13 @@
 `Threads::create_vm() thread.cpp` </br>
 `init_globals() init.cpp` </br>
 `universe_init() universe.cpp` </br>
+`universe_init() universe.cpp` </br>
+`JavaClasses::compute_hard_coded_offsets() javaClasses.cpp` </br>
 
 ###
+
+
+// Compute hard-coded offsets
+// Invoked before SystemDictionary::initialize, so pre-loaded classes
+// are not available to determine the offset_of_static_fields.
+void JavaClasses::compute_hard_coded_offsets()
