@@ -13,6 +13,8 @@
 
 ### 3. `universe_init()`
 
+### 4. `Universe::initialize_heap()`
+
 
 
 // check and init gc policy
