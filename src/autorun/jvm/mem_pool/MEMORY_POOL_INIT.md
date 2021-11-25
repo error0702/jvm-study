@@ -5,6 +5,7 @@
 `init_globals() init.cpp` </br>
 `universe_init() universe.cpp` </br>
 `Universe::initialize_heap() universe.cpp` </br>
+`Universe::heap()->initialize() universe.cpp` </br>
 ###
 
 
