@@ -15,9 +15,6 @@
 
 ### 4. `Universe::initialize_heap()`
 
-### 5. `Universe::heap()->initialize()`
-
-
 
 // check and init gc policy
 ```c++
@@ -65,5 +62,6 @@
   if (status != JNI_OK) {
     return status;
   }
-
 ```
+
+### 5. `Universe::heap()->initialize()`
