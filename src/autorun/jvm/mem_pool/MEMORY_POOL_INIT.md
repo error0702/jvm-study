@@ -1,12 +1,14 @@
 # 内存池初始化
 
 ## 1. 内存池初始化步骤
-`Threads::create_vm() thread.cpp` </br>
-`init_globals() init.cpp` </br>
-`universe_init() universe.cpp` </br>
-`Universe::initialize_heap() universe.cpp` </br>
-`Universe::heap()->initialize() universe.cpp` </br>
-###
+1. `Threads::create_vm() thread.cpp` </br>
+2. `init_globals() init.cpp` </br>
+3. `universe_init() universe.cpp` </br>
+4. `Universe::initialize_heap() universe.cpp` </br>
+5. `Universe::heap()->initialize() universe.cpp` </br>
+
+### 1. `Threads::create_vm()`
+
 
 
 
