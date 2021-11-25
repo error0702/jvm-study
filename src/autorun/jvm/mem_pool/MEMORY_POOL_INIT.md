@@ -4,9 +4,7 @@
 `Threads::create_vm() thread.cpp` </br>
 `init_globals() init.cpp` </br>
 `universe_init() universe.cpp` </br>
-`universe_init() universe.cpp` </br>
-`JavaClasses::compute_hard_coded_offsets() javaClasses.cpp` </br>
-
+`Universe::initialize_heap() universe.cpp` </br>
 ###
 
 
