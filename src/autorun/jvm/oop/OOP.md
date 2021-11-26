@@ -11,7 +11,7 @@
 应的 C++对象。
 > 
 > 
-> 事实上，Hotspot 的设计者并没有按照上述思路设计对象表示系统，布是专门设计了OOP-Klass
+> 事实上，Hotspot 的设计者并没有按照上述思路设计对象表示系统，而是专门设计了OOP-Klass
 分模型：
 
 * OOP: ordinary object pointer， 或 OOPS. 即普通对象指针，用来描述对象实例信息
