@@ -29,5 +29,6 @@
 - [ ] [3.2 jvm启动流程2](src/autorun/jvm/start/README2.md) </br>
 ### 4. 面向对象OOP模型
 - [ ] [4.1 OOP KLASS模型](src/autorun/jvm/oop/OOP.md) </br>
-- [ ] [4.1 指针压缩](src/autorun/jvm/oop/Compressed_Oops.md) </br>
+- [ ] [4.2 指针压缩](src/autorun/jvm/oop/Compressed_Oops.md) </br>
+- [ ] [4.3 内存编织](src/autorun/jvm/oop/Memory_Weave.md) </br>
 
