@@ -34,3 +34,4 @@
 - [ ] [4.3 内存编织](src/autorun/jvm/oop/Memory_Weave.md) </br>
 
 ### 5. 方法调用
+- [ ] [5.1 CallStub栈帧的创建](src/autorun/jvm/method/CALL_STUB.md) </br>
