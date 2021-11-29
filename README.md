@@ -33,3 +33,4 @@
 - [ ] [4.2 指针压缩](src/autorun/jvm/oop/Compressed_Oops.md) </br>
 - [ ] [4.3 内存编织](src/autorun/jvm/oop/Memory_Weave.md) </br>
 
+### 5. 方法调用
