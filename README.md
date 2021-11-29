@@ -35,3 +35,4 @@
 
 ### 5. 方法调用
 - [ ] [5.1 CallStub栈帧的创建](src/autorun/jvm/method/CALL_STUB.md) </br>
+- [ ] [5.2 Java方法调用过程](src/autorun/jvm/method/JAVA_CALLS.md) </br>
