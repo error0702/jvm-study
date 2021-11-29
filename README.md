@@ -23,7 +23,6 @@
 - [x] [2.2 JNIEnv相关API](src/autorun/jvm/jni/JNIEnvAPI.md) </br>
 - [x] [2.3 JNI初始化过程](src/autorun/jvm/jni/JNI_INIT.md)
 
-
 ### 3. jvm启动流程剖析
 - [x] [3.1 jvm启动流程1](src/autorun/jvm/start/README.md) </br>
 - [ ] [3.2 jvm启动流程2](src/autorun/jvm/start/README2.md) </br>
