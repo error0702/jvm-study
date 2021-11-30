@@ -45,5 +45,5 @@ private:
 |   ---|    ---|    ---|    ---|
 |bool|UseCompressedOops|true|{lp64_product}|
 
-
+通过上面的表格可以看出来，这个参数是64位jdk，并且是`product`版本的Hotspot才支持。
 ### 2. KLASS 模型
