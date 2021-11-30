@@ -41,6 +41,9 @@ private:
 * 联合体 `_metadata`: 上面也说过联合体是排他的，也就是说同一时刻，只要联合体中的其中一个字段有值，则其它字段都是未定义的状态
 * 关于对象指针压缩， 使用 `-XX:(+/-)UseCompressedOops` 来控制是否开启指针压缩。 指针压缩的 
 
+|数据类型|参数名称|默认值|参数类型和支持环境|
+|   ---|    ---|    ---|    ---|
+|bool|UseCompressedOops|true|{lp64_product}|
 
-     bool UseCompressedOops                        := true                                {lp64_product}
+
 ### 2. KLASS 模型
