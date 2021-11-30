@@ -26,6 +26,7 @@
 ### 3. jvm启动流程剖析
 - [x] [3.1 jvm启动流程1](src/autorun/jvm/start/README.md) </br>
 - [ ] [3.2 jvm启动流程2](src/autorun/jvm/start/README2.md) </br>
+- [ ] [3.3 jvm启动流程3](src/autorun/jvm/start/README3.md) </br>
 
 ### 4. 面向对象OOP模型
 - [ ] [4.1 OOP KLASS模型](src/autorun/jvm/oop/OOP.md) </br>
