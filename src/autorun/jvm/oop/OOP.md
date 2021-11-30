@@ -18,7 +18,7 @@
 * Klass: Java 类的 C++对等体，用来描达 Java 类
 
 ### 1. OOP 模型
-
+源码位置: `hotspot/src/share/vm/oops/oop.hpp`
 ```c++
 class oopDesc {
 private:
@@ -35,7 +35,7 @@ private:
 * `union` 即为联合，它是一种特殊的类。通过关键字`union` 进行定义，一个`union` 可以有多个数据成员。
 * 联合体是一种互斥的结构体，也就是说在任意时刻，联合中只能有一个数据成员可以有值。当给联合中某个成员赋值之后，该联合中的其它成员就变成未定义状态了。
 
-
+简单解释一下
 
 
 ### 2. KLASS 模型
