@@ -19,6 +19,17 @@
 
 ### 1. OOP 模型
 
+```c++
+class oopDesc {
+private:
+  volatile markOop  _mark; // markOopDesc* markOop
+  
+  union _metadata {
+    Klass*      _klass;
+    narrowKlass _compressed_klass;
+  } _metadata;
+};
+```
 
 
 ### 2. KLASS 模型
