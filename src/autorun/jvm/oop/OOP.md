@@ -25,7 +25,6 @@ jdk 1.7及以下版本结构图(摘自 `Hotspot` 实战)
 jdk1.8及以上版本结构图
 ![](img/gt1.8.jpg)
 
-
 2. OOP模型对应代码
 
 源码位置: `hotspot/src/share/vm/oops/oop.hpp`
