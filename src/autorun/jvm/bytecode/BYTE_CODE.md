@@ -24,4 +24,6 @@
 | 18 | ldc | 将int、 float或string类型从常量池推送至栈顶 |
 | 19 | ldc_w | 将int、 float或string类型从常量池推送至栈顶(宽索引) |
 | 20 | ldc2_w | 将long或者double类型从常量池推送至栈顶(宽索引) |
+| 21 | iload | 将int类型变量推送至栈顶 |
+| 22 | lload | 将long类型变量推送至栈顶 |
 
