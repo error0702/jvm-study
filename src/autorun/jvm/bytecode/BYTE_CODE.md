@@ -14,4 +14,6 @@
 | 08 | iconst_5 | 将int类型 `5` 推送至栈顶 |
 | 09 | lconst_0 | 将long类型 `0` 推送至栈顶 |
 | 10 | lconst_1 | 将long类型 `1` 推送至栈顶 |
+| 11 | fconst_0 | 将float类型 `0` 推送至栈顶 |
+| 12 | fconst_1 | 将float类型 `1` 推送至栈顶 |
 
