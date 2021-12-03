@@ -16,4 +16,7 @@
 | 10 | lconst_1 | 将long类型 `1` 推送至栈顶 |
 | 11 | fconst_0 | 将float类型 `0` 推送至栈顶 |
 | 12 | fconst_1 | 将float类型 `1` 推送至栈顶 |
+| 13 | fconst_2 | 将float类型 `2` 推送至栈顶 |
+| 14 | dconst_0 | 将double类型 `0` 推送至栈顶 |
+| 15 | dconst_1 | 将double类型 `1` 推送至栈顶 |
 
