@@ -26,4 +26,5 @@
 | 20 | ldc2_w | 将long或者double类型从常量池推送至栈顶(宽索引) |
 | 21 | iload | 将int类型变量推送至栈顶 |
 | 22 | lload | 将long类型变量推送至栈顶 |
+| 23 | fload | 将float类型变量推送至栈顶 |
 
