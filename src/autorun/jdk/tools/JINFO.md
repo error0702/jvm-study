@@ -86,10 +86,10 @@ Heap
 > -sysprops  输出系统属性 </br>
 
 1. 如案例1 查询对应的 `PID`
-2. `jinfo -flags {pid}` 
+2. `jinfo -flags {pid}` </br>
 ![](img/jinfo/jinfo_flags1.png)
 
 案例3： 输出当前 `jvm` 进行的全部的系统属性(OracleJdk)
 1. 如案例1 查询对应的 `PID`
-2. `jinfo -sysprops {pid}`
+2. `jinfo -sysprops {pid}` </br>
 ![](img/jinfo/jinfo_sysprops1.png)
