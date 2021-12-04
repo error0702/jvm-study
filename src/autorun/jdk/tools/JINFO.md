@@ -20,9 +20,11 @@
 如果给定的进程在64位虚拟机上运行，你可能需要指定 -J -d64选项，例如: jinfo -J -d64 -sysprops pid
 
 
+只有 `manageable` 级别的参数才能被 `jinfo` 调整. </br>
+查询`manageable` 级别的命令
+> `java -XX:+PrintFlagsInitial | grep manageable`
 
-
-
+摘自 `Zuul JDK`
 
 | type |            property name        |  default |     level    |
 | ---  |              ---                |   ---    |      ---     |
@@ -44,3 +46,8 @@
 | bool | PrintGCDetails                  |  = false | {manageable} |
 | bool | PrintGCID                       |  = false | {manageable} |
 | bool | PrintGCTimeStamps               |  = false | {manageable} |
+
+案例1： 使用 `jinfo` 动态调整GCLog
+1. 查询进程 `PID`
+> jps -l
+2. 查看当前 `PrintGCDetails` `PrintGCDateStamps` `PrintGCTimeStamps`的值
