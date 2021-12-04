@@ -23,9 +23,9 @@
 | 17 | sipush | 将短整型常量值(`-32768~32767`) 推送至栈顶 |
 | 18 | ldc | 将int、 float或string类型从常量池推送至栈顶 |
 | 19 | ldc_w | 将int、 float或string类型从常量池推送至栈顶(宽索引) |
-| 20 | ldc2_w | 将long或者double类型从常量池推送至栈顶(宽索引) |
-| 21 | iload | 将int类型变量推送至栈顶 |
-| 22 | lload | 将long类型变量推送至栈顶 |
-| 23 | fload | 将float类型变量推送至栈顶 |
-| 24 | dload | 将double类型变量推送至栈顶 |
+| 20 | ldc2_w | 将 `long` 或者 `double` 类型从常量池推送至栈顶(宽索引) |
+| 21 | iload | 将 `int` 类型变量推送至栈顶 |
+| 22 | lload | 将 `long` 类型变量推送至栈顶 |
+| 23 | fload | 将 `float` 类型变量推送至栈顶 |
+| 24 | dload | 将 `double` 类型变量推送至栈顶 |
 
