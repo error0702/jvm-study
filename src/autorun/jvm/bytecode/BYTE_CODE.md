@@ -27,4 +27,5 @@
 | 21 | iload | 将int类型变量推送至栈顶 |
 | 22 | lload | 将long类型变量推送至栈顶 |
 | 23 | fload | 将float类型变量推送至栈顶 |
+| 24 | dload | 将double类型变量推送至栈顶 |
 
