@@ -49,5 +49,29 @@
 
 案例1： 使用 `jinfo` 动态调整GCLog
 1. 查询进程 `PID`
-> jps -l
-2. 查看当前 `PrintGCDetails` `PrintGCDateStamps` `PrintGCTimeStamps`的值
+> `jps -l`
+2. 查看当前 `PrintGCDetails` `PrintGCDateStamps` `PrintGCTimeStamps`参数的值
+> `jinfo -flag PrintGCDetails {pid}` </br>
+> -XX:-PrintGCDetails </br>
+> `jinfo -flag PrintGCDateStamps {pid}` </br>
+> -XX:-PrintGCDateStamps </br>
+> `jinfo -flag PrintGCTimeStamps {pid}` </br>
+> -XX:-PrintGCTimeStamps </br>
+3. 使用 `jinfo` 调整 `PrintGCDetails` `PrintGCDateStamps` `PrintGCTimeStamps` 参数的值
+> `jinfo -flag +PrintGCDetails {pid}` </br>
+> `PrintGCDateStamps` 和 `PrintGCTimeStamps` 同理 </br>
+4. 使用第二步中的命令查询参数值
+> 会发现，参数值已经被我们动态的修改掉了。 `-XX:+PrintGCTimeStamps` </br>
+5. 在应用层触发GC, 查看修改后的效果 </br>
+` [Times: user=0.00 sys=0.00, real=0.01 secs]`
+```c++
+Heap
+ PSYoungGen      total 76288K, used 3276K [0x000000076ab00000, 0x0000000770000000, 0x00000007c0000000)
+  eden space 65536K, 5% used [0x000000076ab00000,0x000000076ae33378,0x000000076eb00000)
+  from space 10752K, 0% used [0x000000076eb00000,0x000000076eb00000,0x000000076f580000)
+  to   space 10752K, 0% used [0x000000076f580000,0x000000076f580000,0x0000000770000000)
+ ParOldGen       total 175104K, used 370K [0x00000006c0000000, 0x00000006cab00000, 0x000000076ab00000)
+  object space 175104K, 0% used [0x00000006c0000000,0x00000006c005cbf8,0x00000006cab00000)
+ Metaspace       used 2970K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 311K, capacity 386K, committed 512K, reserved 1048576K
+```
