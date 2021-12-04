@@ -47,7 +47,7 @@
 | bool | PrintGCID                       |  = false | {manageable} |
 | bool | PrintGCTimeStamps               |  = false | {manageable} |
 
-案例1： 使用 `jinfo` 动态调整GCLog
+案例1：不重启JVM使用 `jinfo` 动态调整GCLog
 1. 查询进程 `PID`
 > `jps -l`
 2. 查看当前 `PrintGCDetails` `PrintGCDateStamps` `PrintGCTimeStamps`参数的值
@@ -75,3 +75,16 @@ Heap
  Metaspace       used 2970K, capacity 4486K, committed 4864K, reserved 1056768K
   class space    used 311K, capacity 386K, committed 512K, reserved 1048576K
 ```
+
+案例2： 输出全部的参数(OracleJdk)
+> option </br>
+> no option   输出全部的参数和系统属性 </br>
+> -flag  name  输出对应名称的参数 </br>
+> -flag [+|-]name  开启或者关闭对应名称的参数 </br>
+> -flag name=value  设定对应名称的参数 </br>
+> -flags  输出全部的参数 </br>
+> -sysprops  输出系统属性 </br>
+
+1. 如案例1 查询对应的 `PID`
+2. `jinfo -flags {pid}` 
+![](img/jinfo/jinfo_flags1.png)
