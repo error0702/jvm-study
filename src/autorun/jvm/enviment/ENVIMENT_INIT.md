@@ -2,7 +2,7 @@
 
 ## openjdk 编译步骤
 ### 以jdk1.8为例
-1. 安装Ubuntu环境(我这里使用20.04版本，不过版本最好高于16+以上，x86_64环境)
+1. 安装Ubuntu环境(我这里使用18.04版本，不过版本最好高于16+以上，x86_64环境)
 2. 使用终端更新依赖
 > `sudo apt upgrade & sudo apt update`
 > 如果是低版本的系统，只要把命令更换为 `sudo apt-get upgrade & sudo apt-get update`
