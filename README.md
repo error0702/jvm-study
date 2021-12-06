@@ -40,3 +40,6 @@
 
 
 ## 工具篇
+### 1. JDK自带工具
+- [X] [1.1 JINFO查看及修改运行时参数](src/autorun/jdk/tools/JINFO.md) </br>
+- [ ] [1.2 JSTACK线程相关都靠我](src/autorun/jdk/tools/JSTACK.md) </br>
