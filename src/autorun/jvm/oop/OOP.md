@@ -107,5 +107,4 @@ Klass结构
 //      indicating where oops are located in instances of this klass.
 //    [EMBEDDED implementor of the interface] only exist for interface
 //    [EMBEDDED host klass        ] only exist for an anonymous class (JSR 292 enabled)
-
 ```
