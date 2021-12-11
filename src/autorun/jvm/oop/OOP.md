@@ -67,3 +67,45 @@ private:
 ### 2. KLASS 模型
 Klass结构
 
+> openjdk8 instanceKlass 
+```c++
+// An InstanceKlass is the VM level representation of a Java class.
+// It contains all information needed for at class at execution runtime.
+
+//  InstanceKlass layout:
+//    [C++ vtbl pointer           ] Klass
+//    [subtype cache              ] Klass
+//    [instance size              ] Klass
+//    [java mirror                ] Klass
+//    [super                      ] Klass
+//    [access_flags               ] Klass
+//    [name                       ] Klass
+//    [first subklass             ] Klass
+//    [next sibling               ] Klass
+//    [array klasses              ]
+//    [methods                    ]
+//    [local interfaces           ]
+//    [transitive interfaces      ]
+//    [fields                     ]
+//    [constants                  ]
+//    [class loader               ]
+//    [source file name           ]
+//    [inner classes              ]
+//    [static field size          ]
+//    [nonstatic field size       ]
+//    [static oop fields size     ]
+//    [nonstatic oop maps size    ]
+//    [has finalize method        ]
+//    [deoptimization mark bit    ]
+//    [initialization state       ]
+//    [initializing thread        ]
+//    [Java vtable length         ]
+//    [oop map cache (stack maps) ]
+//    [EMBEDDED Java vtable             ] size in words = vtable_len
+//    [EMBEDDED nonstatic oop-map blocks] size in words = nonstatic_oop_map_size
+//      The embedded nonstatic oop-map blocks are short pairs (offset, length)
+//      indicating where oops are located in instances of this klass.
+//    [EMBEDDED implementor of the interface] only exist for interface
+//    [EMBEDDED host klass        ] only exist for an anonymous class (JSR 292 enabled)
+
+```
