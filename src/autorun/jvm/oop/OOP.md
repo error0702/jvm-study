@@ -67,6 +67,7 @@ private:
 ### 2. KLASS 模型
 Klass结构
 
+源码位置: `src/hotspot/share/oops/instanceKlass.hpp`
 > openjdk8 instanceKlass 
 ```c++
 // An InstanceKlass is the VM level representation of a Java class.
@@ -107,4 +108,17 @@ Klass结构
 //      indicating where oops are located in instances of this klass.
 //    [EMBEDDED implementor of the interface] only exist for interface
 //    [EMBEDDED host klass        ] only exist for an anonymous class (JSR 292 enabled)
+```
+
+```c++
+  // See "The Java Virtual Machine Specification" section 2.16.2-5 for a detailed description
+  // of the class loading & initialization procedure, and the use of the states.
+  enum ClassState {
+    allocated,                          // allocated (but not yet linked)
+    loaded,                             // loaded and inserted in class hierarchy (but not linked yet)
+    linked,                             // successfully linked/verified (but not initialized yet)
+    being_initialized,                  // currently running class initializer
+    fully_initialized,                  // initialized (successfull final state)
+    initialization_error                // error happened during initialization
+  };
 ```
