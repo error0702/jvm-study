@@ -5,3 +5,9 @@
 > `oop` 对象中 除去对象头、填充值和字段数据(成员变量)之外还要存储 `klass` 对象对应的指向。方便获取对应类型。同时，`klass` 对象中还存放着与 `oop` 对象关联度很高的很多属性和操作方法(多态表，`vtable`、`itable`)。
 ## JAVA对象布局
 ![](img/compressed_oops_1.png)
+
+## JVM是怎么实现指针压缩的
+参考此篇: [OOP-KLASS 二分模型](OOP.md)
+
+![](img/object_header.png)
+
