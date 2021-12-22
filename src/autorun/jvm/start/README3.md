@@ -13,7 +13,7 @@ perfMemory_init();
 `basic_types_init`主要用于java初始化基础类型
 源码位置：hotspot/src/share/vm/utilities/globalDefinitions.hpp
 
-> `void basic_types_init()`
+`void basic_types_init()`
 ```c++
 // Map BasicType to signature character
 char type2char_tab[T_CONFLICT+1]={ 0, 0, 0, 0, 'Z', 'C', 'F', 'D', 'B', 'S', 'I', 'J', 'L', '[', 'V', 0, 0, 0, 0, 0};
