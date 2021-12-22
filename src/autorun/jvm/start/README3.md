@@ -95,7 +95,7 @@ if (UseCompressedOops) {
 
 4. 锁类型初始化 `mutex_init();`
 ```c++
-def(tty_lock                     , Mutex  , event,       true ); // allow to lock in VM
+  def(tty_lock                     , Mutex  , event,       true ); // allow to lock in VM
 
   def(CGC_lock                   , Monitor, special,     true ); // coordinate between fore- and background GC
   def(STS_init_lock              , Mutex,   leaf,        true );
