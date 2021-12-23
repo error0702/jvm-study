@@ -229,9 +229,7 @@ void perfMemory_init() {
 
   PerfMemory::initialize();
 }
-```
-
-```c++
+...
 void PerfMemory::initialize() {
   if (_prologue != NULL)
     // initialization already performed
