@@ -9,7 +9,7 @@ JVMTI[^1] 全称是`Java Virtual Machine Tool Interfece`是开发和监控工具
 
 
 [^1]: https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html
-上
+
 ## 部署代理
 
 代理一般是以动态链接库的形式部署,如在`windows`上是`DLL`,在`Solaris`上是`so`,在`mac`上则是`dylib` <br/>
@@ -24,7 +24,13 @@ JVMTI[^1] 全称是`Java Virtual Machine Tool Interfece`是开发和监控工具
   -agentpath: 后面的路径是加载库的绝对路径。 不会发生库名扩展。 <options> 将在启动时传递给代理。 例如，如果指定选项 
       -agentpath:c:\myLibs\foo.dll=opt1,opt2，VM 将尝试加载共享库 c:\myLibs\foo.dll。 如果代理库静态链接到可执行文件中，则不会发生实际加载。</p>
   
+## 生命周期 
+代理有两种启动方式,每个代理只调用一次启动函数。
+ * 代理跟随目标JVM一起启动 Agent_OnLoad函数将会被调用 
+ * 附加到已启动的JVM上 Agent_OnAttach函数将会被调用 <br/>
+      
+代理结束时会执行Agent_OnUnload函数(可选)
   
 ## see also
-[JVM事件处理](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/back/eventHandler.c)
+[JVM事件处理](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/back/eventHandler.c)<br/>
 [JVMTI](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/javavm/export/jvmti.h)
