@@ -41,6 +41,7 @@
 ### 6. JVMTI
 - [x] [6.1 初识JVMTI](src/autorun/jvm/jvmti/README.md)
 - [x] [6.2 使用JVMTI扩展NPE(JEP 358)](src/autorun/jvm/jvmti/richNPE/richNPE.cpp)
+- [x] [6.3 使用JVMTI统计每个方法的调用次数](src/autorun/jvm/jvmti/methodCalledCount/methodCalledCount.cpp)
 ## 工具篇
 ### 1. JDK自带工具
 - [X] [1.1 JINFO查看及修改运行时参数](src/autorun/jdk/tools/JINFO.md) </br>
