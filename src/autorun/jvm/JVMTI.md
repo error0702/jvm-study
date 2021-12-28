@@ -41,8 +41,8 @@ JVMTI[^1] 全称是`Java Virtual Machine Tool Interfece`是开发和监控工具
 ## JVMTI的事件处理
       
 JVMTI依赖于每个事件的回调.一般会在`Agent_OnLoad`函数中添加事件的回调,例如要使用`InterruptThread`功能,则`can_signal_thread`功能必须打开.<br/>
-JVMTI所支持的功能 
 ```c++
+// JVMTI所支持的功能 
 typedef struct {
     unsigned int can_tag_objects : 1;
     unsigned int can_generate_field_modification_events : 1;
@@ -92,9 +92,47 @@ typedef struct {
     unsigned int : 16;
     unsigned int : 16;
 } jvmtiCapabilities;
-      
-      
 
+// JVMTI 所支持的事件类型
+typedef enum {
+    JVMTI_MIN_EVENT_TYPE_VAL = 50,
+    JVMTI_EVENT_VM_INIT = 50,
+    JVMTI_EVENT_VM_DEATH = 51,
+    JVMTI_EVENT_THREAD_START = 52,
+    JVMTI_EVENT_THREAD_END = 53,
+    JVMTI_EVENT_CLASS_FILE_LOAD_HOOK = 54,
+    JVMTI_EVENT_CLASS_LOAD = 55,
+    JVMTI_EVENT_CLASS_PREPARE = 56,
+    JVMTI_EVENT_VM_START = 57,
+    JVMTI_EVENT_EXCEPTION = 58,
+    JVMTI_EVENT_EXCEPTION_CATCH = 59,
+    JVMTI_EVENT_SINGLE_STEP = 60,
+    JVMTI_EVENT_FRAME_POP = 61,
+    JVMTI_EVENT_BREAKPOINT = 62,
+    JVMTI_EVENT_FIELD_ACCESS = 63,
+    JVMTI_EVENT_FIELD_MODIFICATION = 64,
+    JVMTI_EVENT_METHOD_ENTRY = 65,
+    JVMTI_EVENT_METHOD_EXIT = 66,
+    JVMTI_EVENT_NATIVE_METHOD_BIND = 67,
+    JVMTI_EVENT_COMPILED_METHOD_LOAD = 68,
+    JVMTI_EVENT_COMPILED_METHOD_UNLOAD = 69,
+    JVMTI_EVENT_DYNAMIC_CODE_GENERATED = 70,
+    JVMTI_EVENT_DATA_DUMP_REQUEST = 71,
+    JVMTI_EVENT_MONITOR_WAIT = 73,
+    JVMTI_EVENT_MONITOR_WAITED = 74,
+    JVMTI_EVENT_MONITOR_CONTENDED_ENTER = 75,
+    JVMTI_EVENT_MONITOR_CONTENDED_ENTERED = 76,
+    JVMTI_EVENT_RESOURCE_EXHAUSTED = 80,
+    JVMTI_EVENT_GARBAGE_COLLECTION_START = 81,
+    JVMTI_EVENT_GARBAGE_COLLECTION_FINISH = 82,
+    JVMTI_EVENT_OBJECT_FREE = 83,
+    JVMTI_EVENT_VM_OBJECT_ALLOC = 84,
+    JVMTI_MAX_EVENT_TYPE_VAL = 84
+} jvmtiEvent;
+```
+ 
+      
+```C++
 jvmtiCapabilities capabilities = {0};
 // 设置所支持的功能 
 capabilities.can_generate_exception_events = 1;
@@ -115,7 +153,6 @@ jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_EXCEPTION, NULL);
 jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_START, NULL);
 jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_END, NULL);
 ```
-      
  
 ## see also
 [JVM事件处理](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/back/eventHandler.c)<br/>
