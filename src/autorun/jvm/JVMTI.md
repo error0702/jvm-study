@@ -38,7 +38,85 @@ JVMTI[^1] 全称是`Java Virtual Machine Tool Interfece`是开发和监控工具
 > 代理必须包含jvmti.h带有以下语句的文件：`#include <jvmti.h>`,并且必须包含一个`Agent_OnLoad`函数.
 
       
-  
+## JVMTI的事件处理
+      
+JVMTI依赖于每个事件的回调.一般会在`Agent_OnLoad`函数中添加事件的回调,例如要使用`InterruptThread`功能,则`can_signal_thread`功能必须打开.<br/>
+JVMTI所支持的功能 
+```c++
+typedef struct {
+    unsigned int can_tag_objects : 1;
+    unsigned int can_generate_field_modification_events : 1;
+    unsigned int can_generate_field_access_events : 1;
+    unsigned int can_get_bytecodes : 1;
+    unsigned int can_get_synthetic_attribute : 1;
+    unsigned int can_get_owned_monitor_info : 1;
+    unsigned int can_get_current_contended_monitor : 1;
+    unsigned int can_get_monitor_info : 1;
+    unsigned int can_pop_frame : 1;
+    unsigned int can_redefine_classes : 1;
+    unsigned int can_signal_thread : 1;
+    unsigned int can_get_source_file_name : 1;
+    unsigned int can_get_line_numbers : 1;
+    unsigned int can_get_source_debug_extension : 1;
+    unsigned int can_access_local_variables : 1;
+    unsigned int can_maintain_original_method_order : 1;
+    unsigned int can_generate_single_step_events : 1;
+    unsigned int can_generate_exception_events : 1;
+    unsigned int can_generate_frame_pop_events : 1;
+    unsigned int can_generate_breakpoint_events : 1;
+    unsigned int can_suspend : 1;
+    unsigned int can_redefine_any_class : 1;
+    unsigned int can_get_current_thread_cpu_time : 1;
+    unsigned int can_get_thread_cpu_time : 1;
+    unsigned int can_generate_method_entry_events : 1;
+    unsigned int can_generate_method_exit_events : 1;
+    unsigned int can_generate_all_class_hook_events : 1;
+    unsigned int can_generate_compiled_method_load_events : 1;
+    unsigned int can_generate_monitor_events : 1;
+    unsigned int can_generate_vm_object_alloc_events : 1;
+    unsigned int can_generate_native_method_bind_events : 1;
+    unsigned int can_generate_garbage_collection_events : 1;
+    unsigned int can_generate_object_free_events : 1;
+    unsigned int can_force_early_return : 1;
+    unsigned int can_get_owned_monitor_stack_depth_info : 1;
+    unsigned int can_get_constant_pool : 1;
+    unsigned int can_set_native_method_prefix : 1;
+    unsigned int can_retransform_classes : 1;
+    unsigned int can_retransform_any_class : 1;
+    unsigned int can_generate_resource_exhaustion_heap_events : 1;
+    unsigned int can_generate_resource_exhaustion_threads_events : 1;
+    unsigned int : 7;
+    unsigned int : 16;
+    unsigned int : 16;
+    unsigned int : 16;
+    unsigned int : 16;
+    unsigned int : 16;
+} jvmtiCapabilities;
+      
+      
+
+jvmtiCapabilities capabilities = {0};
+// 设置所支持的功能 
+capabilities.can_generate_exception_events = 1;
+capabilities.can_get_bytecodes = 1;
+capabilities.can_get_constant_pool = 1;
+// 使用AddCapabilities函数将其添加到JVMTI环境中
+jvmti->AddCapabilities(&capabilities);
+
+// 注册事件通知 启用了VM初始化,异常,线程启动和结束等几个事件,注册的每个事件都必须有一个指定的回调函数, 如当生类型为Exception的事件时,会调用ExceptionCallback
+jvmtiEventCallbacks callbacks = {0};
+callbacks.VMInit = VMInit;
+callbacks.Exception = ExceptionCallback;
+callbacks.ThreadStart = ThreadStartCallback;
+callbacks.ThreadEnd = ThreadEndCallback;
+jvmti->SetEventCallbacks(&callbacks, sizeof(callbacks));
+jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_VM_INIT, NULL);
+jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_EXCEPTION, NULL);
+jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_START, NULL);
+jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_END, NULL);
+```
+      
+ 
 ## see also
 [JVM事件处理](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/back/eventHandler.c)<br/>
 [JVMTI](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/javavm/export/jvmti.h)
