@@ -155,5 +155,5 @@ jvmti->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_THREAD_END, NULL);
 ```
  
 ## see also
-[JVM事件处理](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/back/eventHandler.c)<br/>
+[JVM事件处理](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/back/eventHandler.c) <br/>
 [JVMTI](https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/javavm/export/jvmti.h)
