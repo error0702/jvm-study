@@ -8,6 +8,7 @@ Collection of small Java serviceability improvements based on
  - [antimodule](#antimodule)
  - [heapsampler](#heapsampler)
  - [faketime](#faketime)
+ - [methodCalledCount](#methodCalledCount)
 
 ## richNPE
 
@@ -183,3 +184,45 @@ Since `System.currentTimeMillis` is a JVM intrinsic method, it's also required t
 the corresponding intrinsic to make sure the JNI method is called:
 
     java -XX:+UnlockDiagnosticVMOptions -XX:DisableIntrinsic=_currentTimeMillis -XX:CompileCommand=dontinline,java.lang.System::currentTimeMillis
+    
+    
+## methodCalledCount
+
+Count the number of times each method is called. Print the number of calls to all methods when unload agent.
+
+#### Compilation 
+
+    # Linux
+    g++ -O2 -fPIC -shared -I $JAVA_HOME/include -I $JAVA_HOME/include/linux -o liba.so methodCalledCount.cpp
+    
+    # mac
+    g++ -O2 -fPIC -shared -I $JAVA_HOME/include -I $JAVA_HOME/include/darwin -o liba.dylib methodCalledCount.cpp
+    
+    # Windows
+    cl /O2 /LD /I "%JAVA_HOME%/include" -I "%JAVA_HOME%/include/win32" methodCalledCount.cpp
+    
+
+#### Usage
+
+    java -agentpath:/path/to/liba.dylib MainClass
+
+
+#### Example output
+```text
+Method name: AbstractCollection.java#<init> called 8 nums.
+Method name: AbstractList.java#<init> called 6 nums.
+Method name: AbstractMap.java#<init> called 7 nums.
+Method name: AbstractSequentialList.java#<init> called 4 nums.
+Method name: AbstractSet.java#<init> called 1 nums.
+Method name: AbstractStringBuilder.java#<init> called 71 nums.
+Method name: AbstractStringBuilder.java#append called 196 nums.
+Method name: AbstractStringBuilder.java#ensureCapacityInternal called 196 nums.
+Method name: AbstractStringBuilder.java#newCapacity called 68 nums.
+Method name: AccessControlContext.java#calculateFields called 5 nums.
+Method name: AccessControlContext.java#combine called 5 nums.
+Method name: AccessControlContext.java#optimize called 5 nums.
+Method name: AccessController.java#doPrivileged called 37 nums.
+Method name: AccessController.java#getContext called 5 nums.
+Method name: AccessController.java#getInheritedAccessControlContext called 5 nums.
+Method name: AccessController.java#getStackAccessControlContext called 5 nums.
+```
