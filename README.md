@@ -38,7 +38,9 @@
 - [ ] [5.1 CallStub栈帧的创建](src/autorun/jvm/method/CALL_STUB.md) </br>
 - [ ] [5.2 Java方法调用过程](src/autorun/jvm/method/JAVA_CALLS.md) </br>
 
-
+### 6. JVMTI
+- [x] [6.1 初识JVMTI](src/autorun/jvm/jvmti/README.md)
+- [x] [6.2 使用JVMTI扩展NPE(JEP 358)](src/autorun/jvm/jvmti/richNPE/richNPE.cpp)
 ## 工具篇
 ### 1. JDK自带工具
 - [X] [1.1 JINFO查看及修改运行时参数](src/autorun/jdk/tools/JINFO.md) </br>
