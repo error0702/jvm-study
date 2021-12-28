@@ -1,18 +1,8 @@
 # jvm-study
+## jvm-study是什么 
 
-> 这是一个学习JVM源码的仓库。
-> 
-> 如果想要贡献文章请提pr (Pull Request)，谢谢
-> 
-> 关于什么是`pr`， 请参考这篇文章 [文章1](https://www.jianshu.com/p/a31a888ac46b)
->  [文章2](https://blog.csdn.net/qq_33429968/article/details/62219783)
-> 
-> 如果是命令行玩家请参考此文章: [命令行如何提交pr](http://www.ruanyifeng.com/blog/2017/07/pull_request.html)
-<hr>
-
+ 这是一个学习JVM源码的仓库. 通过这个仓库,可以学习到JVM相关的知识. 
 ## jvm 学习大纲
-
-<hr>
 
 ### 1. 编译JVM
 * [x] [1.1 OpenJDK编译教程](src/autorun/jvm/enviment/ENVIMENT_INIT.md)
@@ -46,3 +36,8 @@
 ### 1. JDK自带工具
 - [X] [1.1 JINFO查看及修改运行时参数](src/autorun/jdk/tools/JINFO.md) </br>
 - [ ] [1.2 JSTACK线程相关都靠我](src/autorun/jdk/tools/JSTACK.md) </br>
+
+## Contributing
+
+  如果您希望为本项目做出贡献,您可以在<a href=''>这里</a>找到更多信息. 我们感谢您做的出任何贡献.
+
