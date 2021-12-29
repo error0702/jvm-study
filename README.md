@@ -29,7 +29,7 @@
 - [ ] [5.2 Java方法调用过程](src/autorun/jvm/method/JAVA_CALLS.md) </br>
 
 ### 6. JVMTI
-- [x] [6.1 初识JVMTI](src/autorun/jvm/jvmti/README.md)
+- [x] [6.1 初识JVMTI](src/autorun/jvm/jvmti/JVMTI.md)
 - [x] [6.2 使用JVMTI扩展NPE(JEP 358)](src/autorun/jvm/jvmti/richNPE/richNPE.cpp)
 - [x] [6.3 使用JVMTI统计每个方法的调用次数](src/autorun/jvm/jvmti/methodCalledCount/methodCalledCount.cpp)
 ## 工具篇
