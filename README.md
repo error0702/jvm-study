@@ -2,6 +2,7 @@
 ## jvm-study是什么 
 
  这是一个学习JVM源码的仓库. 通过这个仓库,可以学习到JVM相关的知识. 
+
 ## jvm 学习大纲
 
 ### 1. 编译JVM
@@ -30,7 +31,7 @@
 
 ### 6. JVMTI
 - [x] [6.1 初识JVMTI](src/autorun/jvm/jvmti/JVMTI.md)
-- [x] [6.2 使用JVMTI扩展NPE(JEP 358)](src/autorun/jvm/jvmti/richNPE/richNPE.cpp)
+- [x] [6.2 使用JVMTI扩展NPE](src/autorun/jvm/jvmti/richNPE/richNPE.cpp) JEP358[^1]
 - [x] [6.3 使用JVMTI统计每个方法的调用次数](src/autorun/jvm/jvmti/methodCalledCount/methodCalledCount.cpp)
 ## 工具篇
 ### 1. JDK自带工具
@@ -41,3 +42,4 @@
 
   如果您希望为本项目做出贡献,您可以在<a href='docs/CONTRIBUTING.md'>这里</a>找到更多信息. 我们感谢您做的出任何贡献.
 
+[^1]: https://openjdk.java.net/jeps/358
