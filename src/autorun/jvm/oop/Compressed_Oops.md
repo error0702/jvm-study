@@ -11,4 +11,3 @@
 
 ![](img/object_header.png)
 
-
