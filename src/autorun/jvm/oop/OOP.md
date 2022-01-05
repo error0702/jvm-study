@@ -68,7 +68,10 @@ private:
 
 
 `JAVA` 代码中出现 `Entity entity = new Entity(); ` 
-这段代码时，`Hotspot` 会先将 `Entity` 这个类类型加载到方法区[^Method_Area](永久代/元空间。不同的 `JVM` 有不同的实现)
+这段代码时，`Hotspot` 会先将 `Entity` 这个类类型加载到方法区[^Method_Area](永久代/元空间。不同的 `JVM` 有不同的实现)， 然后再 `Hotspot` 堆中为其实例对象 `entity` 对象开辟一块内存空间，存放对象实例数据。
+在 `JVM` 加载 `Entity` 到方法区时，`JVM` 会创建一个 `instanceKlass`，其中保存了 `Entity` 这个类中定义的所有信息，包括变量、方法、父类、接口、构造、属性等， 所以 `instanceKlass` 就是 `Entity` 这个 `JAVA` 类类型结构的对等体。
+而 `instanceOop` 这个普通对象指针 对象中包含了一个指针，这个指针就指向这个 `instanceKlass` 实例。而 `JVM` 在实例化 `Entity` 时会会创建一个 `instanceOop` 实例，该实例便是 `Entity` 对象实例 `entity` 在内存中的对等体。主要存储 `Entity` 实例对象的成员变量。
+其中， instanceOop中有一个指针指向 `instanceKlass`， 通过这个指针， `JVM` 便可以在运行时获取这个类的元信息(反射特性)。
 
 
 
