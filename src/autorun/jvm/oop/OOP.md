@@ -64,6 +64,12 @@ private:
 
 `JVM` 在描述 `JAVA` 类型和类型指针 `JAVA` 方法类型和方法指针，常量池缓存类型指针，基本数据类型和数组类型指针。 `HotSpot` 认为以上这几种模型已经足够描述 `JAVA` 程序的全部： 数据、方法、类型、数组和实例。
 
+前面我们说过，`OOP` 是描述对象类型的承载主体， Klass是描述类类型的承载主体。
+
+
+`JAVA` 代码中出现 `Entity entity = new Entity(); ` 
+这段代码时，`Hotspot` 会先将 `Entity` 这个类类型加载到方法区[^Method_Area](永久代/元空间。不同的 `JVM` 有不同的实现)
+
 
 
 
@@ -126,3 +132,5 @@ Klass结构
     initialization_error                // error happened during initialization
   };
 ```
+
+[^Method_Area]: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.5.4 
