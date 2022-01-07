@@ -49,7 +49,7 @@ in JDK 13, the given agent improves NPE messages for existing JDK 8-12.
 
 Traces basic JVM events like
 
- - Thread started / terminated
+ - [Thread started / terminated](stackframe/stackframe.cpp)
  - GC started / finished
  - Class loading / class prepared
  - Method compiled / unloaded
