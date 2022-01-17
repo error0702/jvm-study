@@ -110,5 +110,4 @@ PropertyList_add(&_system_properties, new SystemProperty("java.vm.specification.
 ```
 
 3. 全局高能来了
-4. 
 `vm_init_globals();` 这里面初始化了很多有用的信息。下篇来分析这里面的部分
