@@ -38,6 +38,7 @@ enum BasicType {
 };
 ```
 
+
 ```c++
 for (int i = T_BOOLEAN; i <= T_CONFLICT; i++) {
       BasicType vt = (BasicType)i;
