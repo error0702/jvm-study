@@ -210,6 +210,7 @@ if (UseCompressedOops) {
 #endif
 ```
 
+
 内存池初始化 `chunkpool_init()` 
 `ChunkPool::initialize();`
 
@@ -221,6 +222,7 @@ static void initialize() {
     _tiny_pool   = new ChunkPool(Chunk::tiny_size   + Chunk::aligned_overhead_size());
   }
 ```
+
 
 性能内存 `perfMemory_init()`
 ```c++
