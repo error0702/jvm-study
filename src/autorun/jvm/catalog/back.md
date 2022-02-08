@@ -21,3 +21,20 @@ CXX_FLAGS=$(CXX_FLAGS) /D TARGET_OS_ARCH_MODEL_windows_$(Platform_arch_model)
 CXX_FLAGS=$(CXX_FLAGS) /D TARGET_COMPILER_visCPP
 ```
 
+
+## 主控线程
+`runtime/thread.cpp`  `VMThread::create()`
+
+## JVM 线程类型
+```c++
+enum ThreadType {
+    vm_thread,
+    cgc_thread,        // Concurrent GC thread
+    pgc_thread,        // Parallel GC thread
+    java_thread,       // Java, CodeCacheSweeper, JVMTIAgent and Service threads.
+    compiler_thread,
+    watcher_thread,
+    asynclog_thread,   // dedicated to flushing logs
+    os_thread
+};
+```
