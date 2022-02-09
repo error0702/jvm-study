@@ -7,6 +7,18 @@
 
 ![](imgs/java_calls_1.png)
 
+众所周知，`jvm` 在调用方法时有如下字节码指令
+
+| 指令名             | 指令含义                 |
+|-----------------|----------------------|
+| invokeinterface | 调用接口方法               | 
+| invokevirtual   | 调用多态方法               | 
+| invokestatic | 调用静态方法               |
+| invokespecial | 调用私有方法、父类方法以及构造方法    |
+| invokedynamic | 动态语言支持调用, `lambda` 表达式 |
+
+
+
 
 
 参考文献: https://blog.csdn.net/qq_31865983/article/details/102877069
