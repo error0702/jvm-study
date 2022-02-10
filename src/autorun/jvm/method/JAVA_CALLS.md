@@ -222,7 +222,7 @@ JavaCallArguments* args, JavaThread* thread) {
 f(value, method, args, thread);
 }
 ```
-可以看出来，归根结底都调用了 `call()` 方法，
+可以看出来，归根结底都调用了 `call()` 方法，然后其中又调用了 `JavaCalls::call_helper()`
 
 `call_helper`
 
