@@ -115,9 +115,9 @@ void JavaCalls::call_helper(JavaValue* result, methodHandle* m, JavaCallArgument
 #endif
   // 检查是否是编译线程
   assert(!thread->is_Compiler_thread(), "cannot compile from the compiler");
-  // 是否需要编译此方法
+  // 是否需要jit编译此方法
   if (CompilationPolicy::must_be_compiled(method)) {
-      // 编译方法
+      // jit编译方法
     CompileBroker::compile_method(method, InvocationEntryBci,
                                   CompilationPolicy::policy()->initial_compile_level(),
                                   methodHandle(), 0, "must_be_compiled", CHECK);
@@ -224,6 +224,34 @@ f(value, method, args, thread);
 ```
 可以看出来，归根结底都调用了 `call()` 方法，然后其中又调用了 `JavaCalls::call_helper()`
 
-`call_helper`
+接 `call_helper` 
+
+```c++
+{ JavaCallWrapper link(method, receiver, result, CHECK);
+    { HandleMark hm(thread);  // HandleMark used by HandleMarkCleaner
+    
+      StubRoutines::call_stub()(
+        (address)&link,
+        // (intptr_t*)&(result->_value), // see NOTE above (compiler problem)
+        result_val_address,          // see NOTE above (compiler problem)
+        result_type,
+        method(),
+        entry_point,
+        args->parameters(),
+        args->size_of_parameters(),
+        CHECK
+      );
+
+      // 处理调用结果
+      result = link.result();  // circumvent MS C++ 5.0 compiler bug (result is clobbered across call)
+      // Preserve oop return value across possible gc points
+      // 将结果设置到当前线程的vm_result中，
+      if (oop_result_flag) {
+        thread->set_vm_result((oop) result->get_jobject());
+      }
+    }
+  }
+  
+```
 
 参考文献: https://blog.csdn.net/qq_31865983/article/details/102877069
