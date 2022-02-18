@@ -13,3 +13,9 @@
 * [x] [2.1 Learn about JNI](src/autorun/jvm/jni/README.md) </br>
 * [x] [2.2 JNIEnv API](src/autorun/jvm/jni/JNIEnvAPI.md) </br>
 * [x] [2.3 JNI Initialization process](src/autorun/jvm/jni/JNI_INIT.md)
+
+### 3. JVM Start-up process profiling
+* [x] [3.1 JVM Start-up process 1](src/autorun/jvm/start/README.md) </br>
+* [ ] [3.2 JVM Start-up process 2](src/autorun/jvm/start/README2.md) </br>
+* [ ] [3.3 JVM Start-up process 3](src/autorun/jvm/start/README3.md) </br>
+* [ ] [3.4 JVM Start-up process 4](src/autorun/jvm/start/README4.md) </br>
