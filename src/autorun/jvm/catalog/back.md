@@ -20,7 +20,6 @@ CXX_FLAGS=$(CXX_FLAGS) /D TARGET_OS_ARCH_windows_$(Platform_arch)
 CXX_FLAGS=$(CXX_FLAGS) /D TARGET_OS_ARCH_MODEL_windows_$(Platform_arch_model)
 CXX_FLAGS=$(CXX_FLAGS) /D TARGET_COMPILER_visCPP
 ```
-
 ## 主控线程
 `runtime/thread.cpp`  `VMThread::create()`
 
