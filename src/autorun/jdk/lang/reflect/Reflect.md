@@ -188,7 +188,6 @@ oop Reflection::invoke(instanceKlassHandle klass, methodHandle reflected_method,
   }
 
   } // !(Universe::is_gte_jdk14x_version() && UseNewReflection)
-
   assert(ptypes->is_objArray(), "just checking");
   int args_len = args.is_null() ? 0 : args->length();
   // Check number of arguments
