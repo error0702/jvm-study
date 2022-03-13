@@ -173,6 +173,7 @@ oop Reflection::invoke(instanceKlassHandle klass, methodHandle reflected_method,
                                                         reflected_method->signature()));
   }
 
+  
   // In the JDK 1.4 reflection implementation, the security check is
   // done at the Java level
   if (!(JDK_Version::is_gte_jdk14x_version() && UseNewReflection)) {
@@ -188,7 +189,6 @@ oop Reflection::invoke(instanceKlassHandle klass, methodHandle reflected_method,
   }
 
   } // !(Universe::is_gte_jdk14x_version() && UseNewReflection)
-
   assert(ptypes->is_objArray(), "just checking");
   int args_len = args.is_null() ? 0 : args->length();
   // Check number of arguments
