@@ -254,4 +254,36 @@ f(value, method, args, thread);
   
 ```
 
+### call_stub
+```c
+#define TRAPS  JavaThread* THREAD
+typedef void (*CallStub)(
+    address   link,
+    intptr_t* result,
+    BasicType result_type,
+    Method* method,
+    address   entry_point,
+    intptr_t* parameters,
+    int       size_of_parameters,
+    TRAPS
+  );
+  
+JavaCallWrapper link(method, receiver, result, CHECK); // 通过该对象已经搭建起Java函数的调用者与被调用者的桥梁,通过这个对象可以实现堆栈追踪,可以得到整个方法的调用链路
+
+// JavaCallWrapper 在每个 JavaCall 之前构造，在调用之后销毁。它的目的是分配/释放一个新的句柄块,
+// 并保存/恢复最后一个 Java fp/sp。 指向 JavaCallWrapper 的指针存储在堆栈中。
+class JavaCallWrapper: StackObj {
+  friend class VMStructs;
+ private:
+  JavaThread*      _thread;                 // the thread to which this call belongs 当前Java函数所在的线程
+  JNIHandleBlock*  _handles;                // the saved handle block 本地调用句柄
+  Method*          _callee_method;          // to be able to collect arguments if entry frame is top frame 调用者方法对象
+  oop              _receiver;               // the receiver of the call (if a non-static call) 被调用者(非静态Java方法)
+
+  JavaFrameAnchor  _anchor;                 // last thread anchor state that we must restore Java线程堆栈对象
+
+  JavaValue*       _result;                 // result value Java方法所返回的值
+}
+```
+
 参考文献: https://blog.csdn.net/qq_31865983/article/details/102877069
