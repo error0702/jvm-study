@@ -43,7 +43,6 @@
 //    [EMBEDDED host klass        ] only exist for an anonymous class (JSR 292 enabled)
 ```
 
-
 主要标注 `klass` 的几种状态。
 ```c++
   // See "The Java Virtual Machine Specification" section 2.16.2-5 for a detailed description
