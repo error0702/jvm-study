@@ -58,3 +58,4 @@
 ```
 
 
+InstanceKlass::initialize_impl
