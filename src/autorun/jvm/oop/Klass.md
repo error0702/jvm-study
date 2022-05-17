@@ -58,4 +58,4 @@
 ```
 
 
-InstanceKlass::initialize_impl
+`InstanceKlass::initialize -> InstanceKlass::initialize_impl`
