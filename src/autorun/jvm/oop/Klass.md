@@ -57,4 +57,4 @@
   };
 ```
 
-
+`InstanceKlass::initialize -> InstanceKlass::initialize_impl`
