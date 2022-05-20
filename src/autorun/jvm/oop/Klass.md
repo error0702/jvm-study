@@ -56,3 +56,5 @@
     initialization_error                // error happened during initialization
   };
 ```
+
+`InstanceKlass::initialize -> InstanceKlass::initialize_impl`
