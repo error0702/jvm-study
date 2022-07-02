@@ -12,3 +12,4 @@
   jint flags = cfs->get_u2_fast() & JVM_RECOGNIZED_CLASS_MODIFIERS;
 ```
 
+
