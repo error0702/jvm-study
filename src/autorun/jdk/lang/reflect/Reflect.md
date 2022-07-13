@@ -291,7 +291,6 @@ public Object invoke(Object obj, Object[] args)
 private static native Object invoke0(Method m, Object obj, Object[] args);
 ```
 
-
 native好处：无需生成额外的class和类加载，减少方法区占用，直接使用klass即可
 坏处：c++调用，性能相对低下
 
