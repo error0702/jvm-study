@@ -43,3 +43,36 @@ JVM的实现方式是:
 4. 对象头中的 Klass 指针在开启 `UseCompressedClassPointers` 时也可以压缩。64位平台下普通对象头常见为 mark word 8字节 + 压缩 klass 指针4字节, 合计12字节, 最终对象大小仍会按对象对齐规则补齐。
 
 ## JVM 指针压缩参数
+
+常见参数如下:
+
+| 参数 | 含义 |
+| :---: | :--- |
+| `UseCompressedOops` | 是否压缩普通对象引用 |
+| `UseCompressedClassPointers` | 是否压缩对象头中的 Klass 指针 |
+| `ObjectAlignmentInBytes` | Java对象对齐字节数, 默认通常是8 |
+
+可以通过下面命令查看参数:
+
+```shell
+java -XX:+PrintFlagsFinal -version | grep -E "UseCompressedOops|UseCompressedClassPointers|ObjectAlignmentInBytes"
+```
+
+在JDK8中, 如果想观察压缩指针模式, 可以尝试:
+
+```shell
+java -XX:+UnlockDiagnosticVMOptions -XX:+PrintCompressedOopsMode -version
+```
+
+常见模式可以先这样理解:
+
+1. 零基压缩: 堆基址为0附近, 解码时主要做左移
+2. 非零基压缩: 解码时需要加上 heap base
+3. 不压缩: 直接使用64位引用
+
+## 注意点
+
+1. `UseCompressedOops` 主要影响对象引用字段和数组元素引用。
+2. `UseCompressedClassPointers` 影响对象头里的 Klass 指针, 它和 `UseCompressedOops` 相关但不是完全同一个东西。
+3. mark word 不会因为压缩对象指针而从8字节变成4字节。
+4. 对象最终大小仍然会受对象对齐影响, 所以看到的对象大小往往是字段大小加对象头之后再补齐的结果。
