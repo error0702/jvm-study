@@ -47,8 +47,8 @@
 | 函数名 | 返回值 | 描述 |
 | :---: | :---: | :---: |
 | `GetVersion()`| `jint` | 获取版本号 |
-| `DefineClass()`| `jclass` | 加载类 |
-| `FindClass()`| `jclass` | 根据类名获取已加载的类 |
+| `DefineClass()`| `jclass` | 根据字节数据定义类 |
+| `FindClass()`| `jclass` | 根据类名查找类, 必要时会触发类加载 |
 | `FromReflectedMethod()`| `jmethodID` | 通过反射获取方法 |
 | `FromReflectedField()`| `jfieldID` | 通过反射获取字段 |
 | `ToReflectedMethod()`| `jobject` | 通过class,methodId,是否是静态获取方法 |
@@ -58,13 +58,13 @@
 | `Throw()`| `jint` | 抛出异常 |
 | `ThrowNew()`| `jint` | 抛出异常, 参数不同 |
 | `ExceptionOccurred()`| `jthrowable` | 获取发生异常的信息 |
-| `ExceptionDescribe()`| `void` | 订阅异常, jvm内部会使用标准输出打印异常信息 |
+| `ExceptionDescribe()`| `void` | 打印当前 pending exception 的异常信息 |
 | `FatalError()`| `void` | 致命错误, jvm会调用os dump现场 |
 | `PushLocalFrame()`| `jint` | //TODO ... |
-| `PopLocalFrame()`| `jint` | //TODO ... |
+| `PopLocalFrame()`| `jobject` | 弹出局部引用帧, 可返回一个保留到上一层帧的局部引用 |
 | `NewGlobalRef()`| `jobject` | 在全局区创建引用 |
-| `DeleteGlobalRef()`| `jobject` | 删除全局区引用 |
-| `DeleteLocalRef()`| `jobject` | 删除局部区引用 |
+| `DeleteGlobalRef()`| `void` | 删除全局区引用 |
+| `DeleteLocalRef()`| `void` | 删除局部区引用 |
 | `IsSameObject()`| `jboolean` | 比较俩对象是否相等 |
 | `NewLocalRef()`| `jobject` | 创建本地引用 |
 | `EnsureLocalCapacity()`| `jint` | 确保本地容量在参数capacity区间 |
@@ -72,8 +72,8 @@
 | `NewObject()`| `jobject` | 根据jclass和method创建对象 |
 | `NewObjectV()`| `jobject` | 根据jclass和method创建对象, 通过`va_list` 传参 |
 | `NewObjectA()`| `jobject` | 根据jclass和method创建对象, 通过 `jvalue *args` 传参 |
-| `GetObjectClass()`| `jclass` | 通过对象获取其`jklass` 对象 |
-| `IsInstanceOf()`| `jboolean` | 比较实例 `Klass` 是否相同 |
+| `GetObjectClass()`| `jclass` | 通过对象获取其运行时 `Class` 对象 |
+| `IsInstanceOf()`| `jboolean` | 判断对象是否是指定类或接口的实例 |
 | `GetMethodID()`| `jmethodID` | 获取 `methodId` |
 | `CallObjectMethod()`| `jobject` | 根据 `methodId` 调用method |
 | `CallObjectMethodV()`| `jobject` | 根据 `methodId` 调用method, 含义同 `NewObjectV()` |
@@ -81,10 +81,10 @@
 | `CallBooleanMethod()`| `jboolean` | 根据 `methodId` 调用boolean method |
 | `CallBooleanMethodV()`| `jboolean` | 根据 `methodId` 调用boolean method 含义同 `NewObjectV()`|
 | `CallBooleanMethodA()`| `jboolean` | 根据 `methodId` 调用boolean method 含义同 `NewObjectA()`|
-| `Call*Method()`| `jboolean` | 根据 `methodId` 调用 各种类型的method |
+| `Call*Method()`| `*` | 根据 `methodId` 调用各种返回类型的method |
 | `CallNonvirtual*Method()`| `*` | 根据 `methodId` 调用 各种类型的非虚method |
 | `GetFieldID()`| `jfieldID` | 根据 `field` 获取field信息 |
-| `Get*FieldID()`| `*` | 根据 `field` 获取各种类型的field信息 |
+| `Get*Field()`| `*` | 根据 `fieldID` 获取各种类型的实例字段值 |
 | `Set*Field()`| `*` | 根据 `field` 设置各种类型的field值 |
 | `CallStatic*Method()`| `*` | 调用各种类型的静态java方法 |
 | `NewString()`| `jstring` | 创建`string`对象 |
@@ -99,8 +99,8 @@
 | `GetObjectArrayElement()`| `jobject` | 获取数组对象 |
 | `SetObjectArrayElement()`| `void` | 设置数组对象指定下标的值 |
 | `New*Array()`| `*` | 创建各种类型的数组对象 |
-| `Get*ArrayElements()`| `*` | 获取各种类型的数组对象 |
-| `Release*ArrayElements()`| `*` | 释放各种类型的数组对象 |
+| `Get*ArrayElements()`| `*` | 获取各种基本类型数组元素指针, 可能返回拷贝 |
+| `Release*ArrayElements()`| `void` | 释放或提交通过 `Get*ArrayElements()` 获取的数组元素 |
 | `Get*ArrayRegion()`| `*` | 获取各种类型数组的区域 |
 | `Set*ArrayRegion()`| `*` | 批量替换各类型数组的区域 |
 | `RegisterNatives()`| `jint` | 注册本地方法 |
@@ -113,12 +113,12 @@
 | `ReleasePrimitiveArrayCritical()`| `void` | 根据地址释放数组 |
 | `GetStringCritical()`| `jchar *` | 获取字符串值 |
 | `ReleaseStringCritical()`| `void` | 释放字符串值 |
-| `NewWeakGlobalRef()`| `jweak` | 创建全局虚引用 |
-| `DeleteWeakGlobalRef()`| `void` | 删除全局虚引用 |
-| `ExceptionCheck()`| `jboolean` | 获取异常栈 |
+| `NewWeakGlobalRef()`| `jweak` | 创建弱全局引用 |
+| `DeleteWeakGlobalRef()`| `void` | 删除弱全局引用 |
+| `ExceptionCheck()`| `jboolean` | 检查当前线程是否存在 pending exception |
 | `NewDirectByteBuffer()`| `jobject` | 创建直接内存的 `byteBuffer` |
 | `GetDirectBufferAddress()`| `void*` | 获取 `byteBuffer` 地址 |
-| `GetDirectBufferCapacity()`| `jlong` | 获取 `byteBuffer` 偏移量 |
+| `GetDirectBufferCapacity()`| `jlong` | 获取直接缓冲区容量 |
 | `GetObjectRefType()`| `jobjectRefType` | 获取对象引用的类型 |
 
 

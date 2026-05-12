@@ -35,7 +35,7 @@ JVMTI[^1] 全称是`Java Virtual Machine Tool Interfece`是开发和监控工具
       
 代理结束时会执行Agent_OnUnload函数(可选)<br/>
 
-> 代理必须包含jvmti.h带有以下语句的文件：`#include <jvmti.h>`,并且必须包含一个`Agent_OnLoad`函数.
+> 代理必须包含jvmti.h带有以下语句的文件：`#include <jvmti.h>`。如果代理随 JVM 启动加载, 需要提供 `Agent_OnLoad`；如果通过 attach 方式加载到已运行 JVM, 可以提供 `Agent_OnAttach`。`Agent_OnUnload` 为可选清理函数。
 
       
 ## JVMTI的事件处理

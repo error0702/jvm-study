@@ -14,7 +14,7 @@
 可以看到， 实际调用了 `thread.cpp` 中的 `Threads::create_vm()` 方法
 
 2. `Threads::create_vm()`
-#### 注：省略部分源码。如果需要查看请移步 `src/hotspot/share/runtime/thread.cpp`
+#### 注：省略部分源码。OpenJDK 8 对应路径为 `hotspot/src/share/vm/runtime/thread.cpp`; 新版 JDK 对应路径通常为 `src/hotspot/share/runtime/thread.cpp`
 > 源码位置: thread.cpp
 ```c++
   // Initialize the output stream module

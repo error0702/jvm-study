@@ -7,17 +7,19 @@
 
 ![](imgs/java_calls_1.png)
 
-众所周知，`jvm` 在调用方法时有如下字节码指令
+需要注意的是, `JavaCalls` 不是 Java 字节码 `invoke*` 指令执行时的统一入口。它主要用于 HotSpot 内部 C++/VM/native 侧主动调用 Java 方法的场景, 例如启动主类 `main` 方法、反射或 VM 内部回调等。
 
-| 指令名             | 指令含义                 | 对应方法           |
+Java 字节码方法调用指令的解析和分派通常发生在解释器、模板解释器、`LinkResolver`、JIT 编译代码等路径中。下面这些字节码指令和 `JavaCalls::call_xxx` 在语义上有相似之处, 但不能简单地一一对应:
+
+| 指令名             | 指令含义                 | 说明           |
 |-----------------|----------------------|----------------|
-| invokeinterface | 调用接口方法               | `call_virtual` | 
-| invokevirtual   | 调用多态方法               | `call_virtual` |
-| invokestatic | 调用静态方法               | `call_static`  |
-| invokespecial | 调用私有方法、父类方法以及构造方法    | `call_special` |
-| invokedynamic | 动态语言支持调用, `lambda` 表达式 | `call_virtual` |
+| invokeinterface | 调用接口方法               | 字节码层接口调用分派 |
+| invokevirtual   | 调用虚方法/多态方法           | 字节码层虚方法分派 |
+| invokestatic | 调用静态方法               | 字节码层静态调用 |
+| invokespecial | 调用私有方法、父类方法以及构造方法    | 字节码层特殊调用 |
+| invokedynamic | 动态语言支持调用, `lambda` 表达式 | 通过动态调用点、方法句柄等机制链接 |
 
-其中, `invokedynamic` 比较特殊，在这里暂不赘述，如果有兴趣可以看看 `jdk` 的源码
+其中, `invokedynamic` 比较特殊, 不应理解为 `call_virtual`。如果有兴趣可以看看 `jdk` 的源码
 `java.lang.invoke.LambdaMetafactory` </br>
 `java.lang.invoke.MethodHandle` </br>
 `java.lang.invoke.CallSite`

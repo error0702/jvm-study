@@ -47,7 +47,7 @@ private:
 
 简单解释一下
 * `markOop` 实际上是markOopDesc指针类型，言外之意就是会随着操作系统的位数决定它的大小。
-如x86架构下，指针大小是4字节(Byte), 而64位系统则是8字节。 所以这也就是为什么对象头无法压缩的原因
+如x86架构下，指针大小是4字节(Byte), 而64位系统则是8字节。`markOop`/mark word 本身不属于压缩对象指针的范围; 但对象头中的 Klass 指针在64位环境下可以通过 `UseCompressedClassPointers` 压缩。
 * 联合体 `_metadata`: 上面也说过联合体是排他的，也就是说同一时刻，只要联合体中的其中一个字段有值，则其它字段都是未定义的状态
 * 关于对象指针压缩， 使用 `-XX:(+/-)UseCompressedOops` 来控制是否开启指针压缩。 控制指针压缩的参数如下表格：
 
@@ -57,8 +57,7 @@ private:
 
 通过上面的表格可以看出来，这个参数是64位jdk，并且是`product`版本的Hotspot级别的参数(当然，自己编译的debug级别的jdk也是可以的。这里使用级别这个词不太准确，请自行脑补)
 
-指针压缩完后的效果其实是把8字节大小的指针使用int类型(4字节)的结构体来存储。这样的话其实存储的是内存地址，而且是需要往右偏移3位的一段空间地址。
-所以取地址时，需要左移3位就可以拿到真正的偏移地址了。这里不再赘述。详情移步到 [4.2 指针压缩](Compressed_Oops.md) 章节
+指针压缩完后的效果可以近似理解为把8字节大小的对象引用使用4字节的 `narrow oop` 来存储。它保存的通常不是完整机器地址, 而是可通过基址和位移解码回真实地址的压缩值。详情移步到 [4.2 指针压缩](Compressed_Oops.md) 章节
 
 4. 总结
 
@@ -75,4 +74,4 @@ private:
 
 
 ## 附录
-[^Method_Area]: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.5.4 
+[^Method_Area]: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.5.4
