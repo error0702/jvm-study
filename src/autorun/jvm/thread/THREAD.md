@@ -807,6 +807,259 @@ OS工具:
 5. 虚拟线程不是完全脱离OS线程。真正执行时仍然需要carrier线程, carrier仍由OS调度。
 6. 虚拟线程不是所有阻塞都零成本。pinning、native调用、文件系统阻塞、ThreadLocal滥用都可能带来问题。
 
+### 10.10 协程、绿色线程、虚拟线程的区别
+
+这些词经常混在一起:
+
+```text
+绿色线程 green thread
+协程 coroutine
+纤程 fiber
+goroutine
+Kotlin coroutine
+Java virtual thread
+```
+
+它们都在试图解决同一个大问题: 不要让“并发任务数量”被OS线程数量直接限制住。但它们的抽象层次和调度方式不一样。
+
+#### 10.10.1 先看一张对比表
+
+| 名称 | 大概含义 | 是否由OS直接调度 | 是否保留完整调用栈 | Java里的对应 |
+| :---: | :--- | :---: | :---: | :--- |
+| OS线程 | 内核调度的执行实体 | 是 | 是 | platform thread底层依赖 |
+| 绿色线程 | 语言运行时在用户态模拟的线程 | 否 | 通常是 | 早期JVM曾有过类似思路 |
+| 有栈协程 | 用户态可挂起/恢复的执行流, 有自己的栈 | 否 | 是 | Java virtual thread更接近这一类 |
+| 无栈协程 | 编译器把挂起点改写成状态机 | 否 | 不保留传统调用栈 | Kotlin coroutine更接近这一类 |
+| goroutine | Go运行时管理的轻量并发执行体 | 否, 运行时调度到OS线程 | 是 | Java无直接等价, 可类比virtual thread |
+| Java virtual thread | JDK管理的轻量 `Thread` | 否, JDK调度到carrier线程 | 是 | JDK 21正式引入 |
+
+这里说“是否由OS直接调度”, 指的是这个并发单元本身是不是内核调度实体。virtual thread不是OS直接调度的, 但它真正执行时仍然要挂载到carrier platform thread, 而carrier最终由OS调度。
+
+#### 10.10.2 绿色线程是什么
+
+绿色线程可以理解成“JVM/语言运行时自己管理的线程”。
+
+```text
+Java green thread
+        |
+        v
+JVM用户态调度器
+        |
+        v
+少量OS线程或单个OS线程
+```
+
+早期Java在某些平台上有过绿色线程实现。它的优点是:
+
+1. 创建成本低。
+2. 切换不一定需要进入内核。
+3. 可以在OS线程能力弱的平台上提供线程抽象。
+
+缺点也明显:
+
+1. 如果运行时没有很好地处理阻塞IO, 一个绿色线程阻塞可能拖住底层OS线程。
+2. 不能充分利用多核, 取决于实现是否能把绿色线程分布到多个OS线程。
+3. 调度、阻塞、信号、native调用都要运行时自己处理。
+
+现代HotSpot平台线程主线选择了一对一模型, 简化了和OS调度、native调用、工具链之间的关系。JDK 21虚拟线程不是简单回到早期绿色线程, 它是在现代JDK、NIO、JFR、调试工具、safepoint等基础上重新设计的轻量线程。
+
+#### 10.10.3 协程是什么
+
+协程更通用, 可以理解成“可以主动挂起并在之后恢复的执行单元”。
+
+普通函数调用:
+
+```text
+caller -> callee -> return
+```
+
+协程:
+
+```text
+coroutine运行一段
+        |
+        v
+挂起, 保存当前位置
+        |
+        v
+之后从挂起点继续运行
+```
+
+协程通常是协作式的: 它要在明确的挂起点让出执行权, 不是OS时钟中断那种抢占式调度。
+
+所以“协程”和“线程”的关键区别是:
+
+| 对比项 | 线程 | 协程 |
+| :---: | :--- | :--- |
+| 调度者 | OS或运行时 | 通常是语言运行时/框架 |
+| 切换时机 | OS线程可被抢占; 用户态线程看实现 | 通常在挂起点协作切换 |
+| 阻塞处理 | OS线程阻塞会占住内核线程 | 理想情况下挂起协程, 不占住底层线程 |
+| 编程模型 | 顺序代码、调用栈自然 | 可能是顺序代码, 也可能暴露async/await |
+
+协程不是一个统一实现。不同语言的“协程”差别很大。
+
+#### 10.10.4 有栈协程和无栈协程
+
+协程常被分成有栈和无栈。
+
+有栈协程:
+
+```text
+每个协程有自己的逻辑调用栈
+可以在深层调用里挂起
+恢复时还能从原来的调用深度继续跑
+```
+
+无栈协程:
+
+```text
+编译器把挂起函数改写成状态机
+挂起点通常需要被函数签名或关键字标记
+调用链上要传播 suspend / async 语义
+```
+
+对比:
+
+| 类型 | 优点 | 代价 |
+| :---: | :--- | :--- |
+| 有栈协程 | 更接近传统同步代码, 调用栈自然 | 运行时要管理栈保存、增长、迁移 |
+| 无栈协程 | 实现相对轻, 编译器可优化状态机 | 函数有颜色, 调用链容易被 `async` / `suspend` 传播 |
+
+Java virtual thread更接近有栈轻量线程: 普通阻塞式Java代码可以直接运行在虚拟线程里, 不需要把方法签名改成 `async` 或 `suspend`。
+
+Kotlin coroutine更接近无栈协程: `suspend` 函数会被编译器改写, 挂起点是语言/编译器显式参与的结果。
+
+#### 10.10.5 Go goroutine和Java virtual thread
+
+Go的goroutine和Java virtual thread很像, 都是运行时管理的大量轻量并发执行体, 再调度到底层OS线程上。
+
+相似点:
+
+1. 都可以创建大量并发任务。
+2. 都不是每个任务固定绑定一个OS线程。
+3. 都有运行时调度器。
+4. 都保留比较自然的同步代码写法。
+5. 阻塞IO需要运行时配合, 避免把底层OS线程全部占住。
+
+不同点:
+
+| 对比项 | Go goroutine | Java virtual thread |
+| :---: | :--- | :--- |
+| 语言位置 | Go语言核心并发模型 | Java `Thread` API 的轻量实现 |
+| 创建方式 | `go f()` | `Thread.startVirtualThread()` / virtual thread executor |
+| 通信习惯 | channel很核心 | Java仍以Thread/Executor/BlockingQueue/同步器为主 |
+| 调度器 | Go runtime GMP模型 | JDK调度virtual thread到carrier platform thread |
+| 生态目标 | 从语言设计初期就围绕goroutine | 兼容既有Java同步阻塞代码和工具生态 |
+
+所以可以类比, 但不要等同。
+
+#### 10.10.6 Kotlin coroutine和Java virtual thread
+
+Kotlin coroutine和Java virtual thread都能写出看起来顺序的代码, 但实现方式差异很大。
+
+Kotlin coroutine:
+
+```kotlin
+suspend fun fetch(): String {
+    delay(100)
+    return "ok"
+}
+```
+
+特点:
+
+1. 需要 `suspend` 标记。
+2. 编译器把挂起点改写成状态机。
+3. 调度由CoroutineDispatcher决定。
+4. 调用链会传播suspend语义, 也就是常说的“函数有颜色”。
+
+Java virtual thread:
+
+```java
+Thread.startVirtualThread(() -> {
+    var data = blockingHttpCall();
+});
+```
+
+特点:
+
+1. 仍然是普通Java同步代码。
+2. 不需要 `async` / `await` / `suspend` 关键字。
+3. 阻塞点由JDK库和运行时协作处理。
+4. 调试栈、异常栈更接近传统线程模型。
+
+因此, Java virtual thread的设计取向不是给Java加一套新的async语法, 而是让原来的Thread-per-request模型变得更轻。
+
+#### 10.10.7 为什么Java选择Virtual Thread而不是Coroutine API
+
+JEP 444里有一个很重要的设计倾向: 保留 `Thread` 编程模型。
+
+原因可以这样理解:
+
+1. Java生态里已有大量阻塞式API, 比如JDBC、InputStream、Socket、BlockingQueue。
+2. 如果引入async/await式API, 旧代码、旧框架、调试工具都要适配新的函数颜色。
+3. `Thread` 是Java平台已经存在很久的并发抽象, 调试器、profiler、JFR、线程dump都围绕它工作。
+4. 把轻量并发做成 `Thread` 的一种, 可以最大化复用现有代码和工具。
+
+所以Java virtual thread不是“Java没有协程”, 而是Java选择把轻量并发集成进 `Thread` 抽象里, 尽量避免把业务代码改写成另一套async风格。
+
+#### 10.10.8 和safepoint、OS调度的关系
+
+协程/虚拟线程容易让人误以为“脱离了OS调度”。这不对。
+
+更准确是:
+
+```text
+virtual thread:
+    JDK调度
+    负责决定哪个虚拟线程挂载到carrier上
+
+carrier/platform thread:
+    OS调度
+    负责决定哪个carrier真正拿到CPU
+```
+
+safepoint也还在:
+
+1. 虚拟线程执行Java代码时, 仍然跑在HotSpot解释器/JIT体系里。
+2. carrier线程执行到safepoint poll时, 仍然要配合JVM safepoint协议。
+3. 虚拟线程的栈可以被JVM管理和遍历, 但它不是传统固定native stack。
+4. 大量虚拟线程会改变线程dump和栈分析方式, 但不会绕开GC、JIT、safepoint。
+
+所以可以把层次记成:
+
+```text
+业务并发:
+    virtual thread / coroutine / goroutine
+
+运行时调度:
+    JVM / Go runtime / Kotlin coroutine dispatcher
+
+真正CPU调度:
+    OS scheduler调度平台线程或内核线程
+```
+
+#### 10.10.9 一句话总结
+
+如果用一句话区分:
+
+```text
+绿色线程:
+    早期运行时自己模拟线程
+
+协程:
+    可挂起/恢复的用户态执行单元, 具体实现差异很大
+
+Kotlin coroutine:
+    编译器改写的无栈协程, suspend语义显式传播
+
+Go goroutine:
+    Go运行时管理的有栈轻量并发执行体
+
+Java virtual thread:
+    JDK管理的轻量Thread, 尽量保留传统同步阻塞代码和工具体验
+```
+
 ## 11. 总结
 
 1. HotSpot主流Java线程模型是一对一映射到OS线程。
@@ -817,6 +1070,7 @@ OS工具:
 6. 分析线程问题时要结合 `jstack`、OS线程ID、CPU使用率和系统调度信息一起看。
 7. JDK 21虚拟线程改变了Java线程和OS线程的一对一直觉, 需要单独区分virtual thread、platform thread、carrier thread。
 8. 线程协作不仅要考虑调度, 还要考虑Java内存模型的可见性边界。
+9. 协程、绿色线程、goroutine、virtual thread都在减少OS线程数量压力, 但抽象层次和实现方式并不相同。
 
 ## 12. 参考资料
 
