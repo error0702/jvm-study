@@ -38,6 +38,8 @@
 
 ### 7. 线程模型
 * [ ] [7.1 JVM线程模型与操作系统调度差异](src/autorun/jvm/thread/THREAD.md)
+* [ ] [7.2 HotSpot Safepoint安全点机制](src/autorun/jvm/thread/SAFEPOINT.md)
+
 ## 工具篇
 ### 1. JDK自带工具
 * [X] [1.1 JINFO查看及修改运行时参数](src/autorun/jdk/tools/JINFO.md) </br>

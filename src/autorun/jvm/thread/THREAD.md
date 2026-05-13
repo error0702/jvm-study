@@ -209,7 +209,7 @@ Java priority 1..10  ->  OS priority / nice / policy
 
 ## 8. Safepoint与线程调度
 
-线程调度是OS层面的事情, safepoint是JVM为了执行某些全局操作而设置的安全点机制。
+线程调度是OS层面的事情, safepoint是JVM为了执行某些全局操作而设置的安全点机制。更完整的说明见 [HotSpot Safepoint 安全点机制](SAFEPOINT.md)。
 
 典型需要safepoint的场景:
 
@@ -224,7 +224,7 @@ Java priority 1..10  ->  OS priority / nice / policy
 * OS调度决定线程什么时候获得CPU继续跑
 * JVM safepoint决定线程跑到某些点时是否需要停下配合VM操作
 
-所以如果某个线程长时间没有被OS调度到, 或者长时间处在native代码里, 都可能影响JVM进入safepoint的速度。
+所以如果某个线程长时间没有被OS调度到, 就可能迟迟跑不到下一个safepoint检查位置。至于native代码, 要看具体状态: 普通native执行通常可以被JVM视为安全状态, 但JNI critical、长时间不返回或持有VM相关资源的native逻辑, 仍然可能影响GC或其它VM操作。
 
 ## 9. 总结
 
@@ -233,4 +233,3 @@ Java priority 1..10  ->  OS priority / nice / policy
 3. Linux、macOS、Windows在线程优先级、阻塞唤醒、计时器精度、电源策略上都有差异。
 4. `Thread.setPriority()`、`yield()`、`sleep()` 都不能作为严格调度保证。
 5. 分析线程问题时要结合 `jstack`、OS线程ID、CPU使用率和系统调度信息一起看。
-
