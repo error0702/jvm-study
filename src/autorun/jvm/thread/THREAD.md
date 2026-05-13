@@ -1,10 +1,10 @@
 # JVM线程模型
 
-> 本文主要以 OpenJDK 8 / HotSpot 为例。线程这块容易和操作系统实现混在一起, 所以这里先记录一条主线: Java线程在HotSpot内部怎么表示, 又是怎么落到不同操作系统线程上的。
+> 本文主要以 OpenJDK 8 / HotSpot 为例。线程这块容易和操作系统实现混在一起, 所以这里先记录一条主线: Java线程在HotSpot内部怎么表示, 又是怎么落到不同操作系统线程上的。更高版本引入Virtual Threads之后, Java层线程和OS线程的关系会发生变化, 文末单独说明。
 
 ## 1. Java线程和OS线程的关系
 
-早期JVM曾经出现过绿色线程模型, 但是HotSpot主流实现中, Java线程基本采用一对一模型:
+早期JVM曾经出现过绿色线程模型, 但是HotSpot主流平台线程实现中, Java线程基本采用一对一模型:
 
 ```text
 java.lang.Thread
@@ -28,6 +28,13 @@ native thread(pthread / Windows thread)
 
 所以 Java 线程什么时候运行、运行多久、在哪个CPU上运行, 最终还是由操作系统调度器决定。JVM可以设置线程优先级、创建线程、阻塞唤醒线程, 但它不是最终的CPU调度者。
 
+这里要把两个概念分开:
+
+1. **平台线程**: JDK 8里普通 `java.lang.Thread` 的主流实现, 基本一条Java线程对应一条OS线程。
+2. **虚拟线程**: JDK 21正式引入的轻量线程, Java层可以创建大量 `Thread`, 但它们不会长期绑定一条固定OS线程。
+
+本文前半部分默认讨论平台线程。虚拟线程见第10节。
+
 ## 2. 源码入口
 
 常见源码位置:
@@ -39,6 +46,9 @@ native thread(pthread / Windows thread)
 | Linux实现 | `hotspot/src/os/linux/vm/os_linux.cpp` | `src/hotspot/os/linux/os_linux.cpp` |
 | macOS实现 | `hotspot/src/os/bsd/vm/os_bsd.cpp` | `src/hotspot/os/bsd/os_bsd.cpp` |
 | Windows实现 | `hotspot/src/os/windows/vm/os_windows.cpp` | `src/hotspot/os/windows/os_windows.cpp` |
+| Java Thread native入口 | `hotspot/src/share/vm/prims/jvm.cpp` | `src/hotspot/share/prims/jvm.cpp` |
+| Parker/park实现 | `hotspot/src/share/vm/runtime/park.hpp` | `src/hotspot/share/runtime/park.hpp` |
+| ObjectMonitor | `hotspot/src/share/vm/runtime/objectMonitor.cpp` | `src/hotspot/share/runtime/objectMonitor.cpp` |
 
 在OpenJDK 8中, Java线程创建可以重点看:
 
@@ -56,6 +66,35 @@ os::start_thread(...)
 4. 平台相关的 `os::create_thread` 创建native thread
 5. `os::start_thread` 唤醒线程真正开始执行
 
+可以把调用链粗略画成:
+
+```text
+Java: Thread.start()
+        |
+        v
+JVM_StartThread
+        |
+        v
+new JavaThread(...)
+        |
+        v
+os::create_thread(thread, ...)
+        |
+        v
+pthread_create / CreateThread
+        |
+        v
+os::start_thread(thread)
+        |
+        v
+JavaThread::run()
+        |
+        v
+调用Java层Thread.run()
+```
+
+这里容易误解的一点是: `Thread.start()` 不是直接在当前线程里调用 `run()`。它会进入VM, 创建或绑定底层执行实体, 然后由新线程回调Java层 `run()`。
+
 ## 3. HotSpot中的线程类型
 
 HotSpot内部不只有Java业务线程, 还有很多VM自己的线程:
@@ -68,8 +107,13 @@ HotSpot内部不只有Java业务线程, 还有很多VM自己的线程:
 | `WatcherThread` | 周期性任务线程 |
 | GC线程 | 执行串行、并行或并发GC相关工作 |
 | Service线程 | JVM内部服务线程, 例如低频事件处理 |
+| Attach Listener | 处理 `jcmd`、`jstack` 等Attach请求 |
+| Signal Dispatcher | 处理部分信号相关逻辑 |
+| Reference Handler / Finalizer | Java层引用处理、终结逻辑相关线程 |
 
 这些线程最终也会落到操作系统线程上。区别在于它们在HotSpot内部承担的职责不同。
+
+从排查角度看, `jstack` 里看到的不一定都是业务线程。像 `VM Thread`、`GC Thread`、`C2 CompilerThread`、`Attach Listener` 这些线程, 更应该从JVM内部职责理解, 不要误判成业务线程池泄漏。
 
 ## 4. 线程状态
 
@@ -94,11 +138,45 @@ _thread_in_Java
 _thread_blocked
 ```
 
+三层状态不要混在一起:
+
+| 层次 | 例子 | 说明 |
+| :---: | :--- | :--- |
+| Java层状态 | `RUNNABLE`、`WAITING`、`BLOCKED` | `Thread.getState()` 或 `jstack` 展示给Java开发者的抽象 |
+| HotSpot内部状态 | `_thread_in_Java`、`_thread_in_native`、`_thread_blocked` | JVM内部用于safepoint、栈遍历、状态转换判断 |
+| OS调度状态 | running、runnable、sleeping、blocked | 内核调度器看到的线程状态 |
+
 这里要注意一个容易误解的点:
 
 > Java层的 `RUNNABLE` 不等于操作系统层面一定正在CPU上运行。
 
 Java里的 `RUNNABLE` 通常包含“正在运行”和“就绪等待CPU调度”。也就是说, 一个线程处于 `RUNNABLE`, 可能正在CPU上执行, 也可能只是已经具备运行条件, 但还在OS run queue里排队。
+
+### 4.1 Java状态和常见阻塞点
+
+| Java状态 | 常见来源 | 是否还在消耗CPU |
+| :---: | :--- | :---: |
+| `NEW` | 创建了 `Thread` 但还没 `start()` | 否 |
+| `RUNNABLE` | 正在Java/native中运行, 或已就绪等待OS调度 | 可能 |
+| `BLOCKED` | 等待进入 `synchronized` monitor | 否, 通常在等待锁 |
+| `WAITING` | `Object.wait()`、`Thread.join()`、`LockSupport.park()` | 否, 等待唤醒 |
+| `TIMED_WAITING` | `sleep()`、限时 `wait()`、限时 `park()` | 否, 等待超时或唤醒 |
+| `TERMINATED` | `run()` 结束或异常退出 | 否 |
+
+`RUNNABLE` 最容易误判。比如线程卡在socket read的native调用里, Java层也可能看到 `RUNNABLE`。所以排查CPU问题时, 不能只靠Java状态, 还要结合OS线程CPU占用。
+
+### 4.2 HotSpot状态和safepoint的关系
+
+HotSpot内部状态更关心“线程现在能不能被VM安全观察”:
+
+| HotSpot状态 | 大概含义 | 对safepoint的影响 |
+| :---: | :--- | :--- |
+| `_thread_in_Java` | 正在执行Java解释器或JIT代码 | 通常需要跑到poll点响应safepoint |
+| `_thread_in_vm` | 正在执行VM内部代码 | VM代码路径需要遵守safepoint检查协议 |
+| `_thread_in_native` | 正在执行JNI/native代码 | 通常暂时视为safe, 返回Java前要检查 |
+| `_thread_blocked` | 阻塞等待monitor、park等 | 通常可认为safe, 唤醒/返回前检查 |
+
+这也是为什么 [HotSpot Safepoint安全点机制](SAFEPOINT.md) 里强调: safepoint不能只看Java层 `Thread.State`。
 
 ## 5. 操作系统调度差异
 
@@ -207,7 +285,90 @@ Java priority 1..10  ->  OS priority / nice / policy
 
 这些API到了HotSpot内部会经过不同路径, 但最终阻塞和唤醒都离不开OS提供的等待机制。
 
-## 8. Safepoint与线程调度
+### 7.1 monitor、park、interrupt的关系
+
+这几个概念容易混:
+
+| 机制 | Java入口 | HotSpot/底层关注点 | 备注 |
+| :---: | :--- | :--- | :--- |
+| monitor | `synchronized`、`Object.wait()` | `ObjectMonitor`、monitor enter/exit、wait set | `wait()` 必须持有monitor, 调用后释放monitor |
+| park | `LockSupport.park()` | `Parker`、permit、条件变量/事件 | AQS、线程池、并发包常用 |
+| interrupt | `Thread.interrupt()` | 中断标记 + 唤醒部分可中断阻塞 | 不是强制停止线程 |
+
+`interrupt()` 不会直接杀死线程。它主要做两件事:
+
+1. 设置线程的中断标记。
+2. 如果线程正阻塞在 `sleep()`、`wait()`、`join()` 或部分park路径上, 让它有机会被唤醒并处理 `InterruptedException` 或中断状态。
+
+所以业务代码要想“响应中断”, 必须自己检查中断标记或正确处理中断异常。JVM不会因为调用了 `interrupt()` 就把目标线程从任意机器指令处停下来。
+
+### 7.2 为什么不建议依赖sleep做同步
+
+`Thread.sleep(100)` 只能表达“至少让当前线程在一段时间内不主动运行”, 不能表达“另一个线程一定已经完成某件事”。
+
+原因是:
+
+1. sleep结束后线程只是变成可运行, 什么时候再次拿到CPU仍由OS决定。
+2. OS计时器精度、负载、电源策略都会影响唤醒时间。
+3. 另一个线程可能因为锁竞争、GC、safepoint、CPU配额没有运行。
+
+正确表达线程协作, 应该优先用:
+
+1. `join()` 等待线程结束。
+2. `CountDownLatch`、`CyclicBarrier`、`Semaphore` 等同步器。
+3. `Future` / `CompletableFuture` 表达任务完成。
+4. `BlockingQueue` 表达生产消费。
+
+## 8. 线程问题怎么定位
+
+分析Java线程问题时, 最好同时拿三类信息:
+
+1. JVM视角: `jstack` / `jcmd Thread.print`。
+2. OS视角: 每个native线程的CPU、状态、调度情况。
+3. JVM日志: GC、safepoint、JIT、容器CPU等背景。
+
+### 8.1 Java线程和OS线程ID怎么对应
+
+`jstack` 中常见字段:
+
+```text
+"worker-1" #31 prio=5 os_prio=0 tid=0x00007f... nid=0x1234 runnable
+```
+
+可以先这样理解:
+
+| 字段 | 含义 |
+| :---: | :--- |
+| Java线程名 | `"worker-1"` |
+| `#31` | JVM内部展示的Java线程序号 |
+| `prio` | Java层优先级 |
+| `os_prio` | OS层优先级映射结果 |
+| `tid` | HotSpot内部 `JavaThread*` 地址一类的标识 |
+| `nid` | native thread id, 通常用于和OS工具对齐 |
+
+在Linux上常用做法:
+
+```shell
+top -H -p <pid>
+printf '%x\n' <tid>
+jstack <pid> | grep -i <hex-nid>
+```
+
+`top -H` 里看到的是十进制线程ID, `jstack` 的 `nid` 常以十六进制展示, 所以需要转换。
+
+### 8.2 常见现象怎么分流
+
+| 现象 | 优先看什么 | 可能方向 |
+| :---: | :--- | :--- |
+| CPU很高 | `top -H` + `jstack` 对齐高CPU线程 | 死循环、忙等、频繁GC、JIT编译、锁自旋 |
+| 大量 `BLOCKED` | `jstack` monitor owner | synchronized锁竞争 |
+| 大量 `WAITING` / `TIMED_WAITING` | 等待栈顶方法 | 线程池空闲、队列等待、park、sleep |
+| 响应突然卡顿 | GC日志 + safepoint日志 + 线程栈 | STW GC、长safepoint、锁竞争、IO阻塞 |
+| 容器内抖动 | cgroup CPU、`top -H`、JVM flags | CPU quota太小、线程数过多、GC线程竞争 |
+
+不要只看线程状态下结论。例如大量 `WAITING` 不一定是问题, 线程池工作线程空闲时本来就会等待队列任务。
+
+## 9. Safepoint与线程调度
 
 线程调度是OS层面的事情, safepoint是JVM为了执行某些全局操作而设置的安全点机制。更完整的说明见 [HotSpot Safepoint 安全点机制](SAFEPOINT.md)。
 
@@ -226,10 +387,267 @@ Java priority 1..10  ->  OS priority / nice / policy
 
 所以如果某个线程长时间没有被OS调度到, 就可能迟迟跑不到下一个safepoint检查位置。至于native代码, 要看具体状态: 普通native执行通常可以被JVM视为安全状态, 但JNI critical、长时间不返回或持有VM相关资源的native逻辑, 仍然可能影响GC或其它VM操作。
 
-## 9. 总结
+## 10. JDK 21 Virtual Threads补充
+
+JDK 21正式引入Virtual Threads。它会改变“Java线程基本一对一映射OS线程”这个直觉。
+
+可以先这样理解:
+
+```text
+传统平台线程:
+    Java Thread  <->  Platform Thread  <->  OS Thread
+
+虚拟线程:
+    Virtual Thread  --挂载/卸载-->  Carrier Platform Thread  <->  OS Thread
+```
+
+几个重点:
+
+1. 虚拟线程仍然是 `java.lang.Thread` 的一种, 但不是一条虚拟线程长期绑定一条OS线程。
+2. 虚拟线程真正执行Java代码时, 会挂载到某个平台线程上。
+3. 阻塞点如果能被JDK识别和协作处理, 虚拟线程可以卸载, 让carrier线程继续执行其它虚拟线程。
+4. 如果遇到某些不能卸载的阻塞或pinning场景, carrier线程仍可能被占住。
+
+这对线程分析有几个影响:
+
+1. JDK 8里“一条Java线程约等于一条OS线程”的判断, 到虚拟线程场景不再成立。
+2. 线程dump里可能看到大量虚拟线程, 但OS线程数量不一定同等增加。
+3. 分析调度和CPU时, 要区分业务虚拟线程栈和实际承载它运行的平台线程。
+4. 虚拟线程适合大量阻塞式任务, 但不等于能绕过CPU计算瓶颈。
+
+如果本文讨论的是OpenJDK 8源码, 仍然可以把普通 `Thread` 按平台线程理解; 如果讨论JDK 21+应用, 必须先确认线程是platform thread还是virtual thread。
+
+### 10.1 解决的核心问题
+
+传统平台线程的问题不在于编程模型难理解, 而在于OS线程太贵:
+
+1. 创建和销毁OS线程成本高。
+2. 每条OS线程需要独立native stack, 内存占用高。
+3. 线程数量太多时, OS调度和上下文切换成本明显上升。
+4. 服务器端“一个请求一个线程”的写法简单, 但高并发下容易被线程数量限制。
+
+异步/响应式编程可以减少线程占用, 但代价是代码被拆成回调、阶段、future链, 调试栈也不再直观。虚拟线程的目标是保留“同步阻塞式代码”的写法, 但把等待IO时占住OS线程的问题交给JDK运行时处理。
+
+所以虚拟线程适合的典型场景是:
+
+```text
+大量并发任务
+        +
+任务大部分时间在等IO/锁/队列/远程调用
+        +
+希望保留同步代码风格
+```
+
+它不适合被理解成“让CPU计算变快”。如果任务都是CPU密集计算, 虚拟线程数量超过CPU核心数并不能提高吞吐。
+
+### 10.2 M:N调度模型
+
+平台线程是一对一:
+
+```text
+Java Thread 1  ->  OS Thread 1
+Java Thread 2  ->  OS Thread 2
+Java Thread 3  ->  OS Thread 3
+```
+
+虚拟线程是M:N:
+
+```text
+Virtual Thread 1 \
+Virtual Thread 2  \
+Virtual Thread 3   ->  少量Carrier Platform Thread  ->  OS Thread
+Virtual Thread N  /
+```
+
+这里有几个术语:
+
+| 名称 | 含义 |
+| :---: | :--- |
+| virtual thread | Java层轻量线程, 仍然是 `java.lang.Thread` |
+| platform thread | 传统平台线程, 底层绑定OS线程 |
+| carrier thread | 当前承载某个virtual thread运行的平台线程 |
+| mount | virtual thread 被挂载到carrier上开始执行 |
+| unmount | virtual thread 从carrier卸载, carrier可以去执行别的virtual thread |
+
+JDK内部会用自己的调度器把虚拟线程分配给carrier线程。carrier线程再由OS调度到CPU上运行。也就是说:
+
+```text
+virtual thread调度: JDK负责
+platform/carrier thread调度: OS负责
+```
+
+### 10.3 什么时候会mount / unmount
+
+虚拟线程真正执行Java代码时必须挂载到carrier线程上。遇到JDK能协作处理的阻塞点时, 它可以卸载:
+
+```text
+virtual thread执行Java代码
+        |
+        v
+mount到carrier
+        |
+        v
+遇到可协作阻塞, 例如JDK网络IO、BlockingQueue.take、LockSupport.park
+        |
+        v
+unmount, 释放carrier
+        |
+        v
+阻塞条件满足后重新进入调度器
+        |
+        v
+再次mount到某个carrier继续执行
+```
+
+要注意: 重新mount时不保证还是同一条carrier线程。Java代码里 `Thread.currentThread()` 看到的仍然是虚拟线程本身, 但native代码如果读取OS线程ID, 可能发现同一个虚拟线程前后运行在不同OS线程上。
+
+### 10.4 创建方式和使用习惯
+
+常见创建方式:
+
+```java
+Thread.startVirtualThread(() -> {
+    // task
+});
+```
+
+或者:
+
+```java
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> {
+        // task
+        return null;
+    });
+}
+```
+
+使用习惯和平台线程不同:
+
+1. 不要池化虚拟线程。虚拟线程很轻, 通常一个任务创建一个虚拟线程。
+2. 如果要限制并发访问某个资源, 用 `Semaphore`、连接池、限流器, 不要用固定大小虚拟线程池。
+3. 小心 `ThreadLocal`。虚拟线程数量可能非常大, 每个虚拟线程都放大对象到 `ThreadLocal` 会造成内存压力。
+4. CPU密集型任务仍然应该按CPU核心数控制并行度。
+
+### 10.5 和Thread API的差异
+
+虚拟线程仍然是 `Thread`, 但有一些差异:
+
+| 差异点 | 说明 |
+| :---: | :--- |
+| 构造方式 | 不能通过 `new Thread(...)` 创建虚拟线程, 要用 `Thread.ofVirtual()`、`Thread.startVirtualThread()` 或虚拟线程Executor |
+| daemon | 虚拟线程总是daemon线程 |
+| priority | 虚拟线程固定为 `Thread.NORM_PRIORITY`, `setPriority()` 对它没有实际调度意义 |
+| thread group | 虚拟线程不作为传统线程组的活跃成员 |
+| `ThreadLocal` | JDK 21正式版支持 `ThreadLocal`, 但要谨慎使用 |
+| `Thread.getAllStackTraces()` | 返回平台线程, 不适合用来枚举全部虚拟线程 |
+
+这说明虚拟线程尽量复用 `Thread` 编程模型, 但不能把所有平台线程经验原样套上去。
+
+### 10.6 pinning是什么
+
+pinning可以理解成: 虚拟线程本来应该在阻塞时释放carrier, 但因为某些原因不能卸载, 于是把carrier也一起占住了。
+
+JDK 21里常见pinning场景:
+
+1. 虚拟线程在 `synchronized` 方法或代码块里执行阻塞操作。
+2. 虚拟线程执行native方法或foreign function时发生阻塞。
+
+示意:
+
+```java
+synchronized void read() throws IOException {
+    socket.getInputStream().read(); // 如果这里阻塞, JDK 21里可能pin住carrier
+}
+```
+
+pinning不会让程序语义错误, 但会降低扩展性。因为carrier线程被占住后, 它不能去运行其它虚拟线程。
+
+JDK 21里可以用下面参数辅助定位:
+
+```shell
+-Djdk.tracePinnedThreads=full
+```
+
+JDK 24的 JEP 491 改进了这个问题: `synchronized` 相关的阻塞可以释放底层平台线程, 也就是消除绝大多数因为 `synchronized` 导致的pinning。不过native/foreign function相关场景仍然需要谨慎。
+
+因此写文档或排查问题时要带上版本:
+
+```text
+JDK 21:
+    synchronized中阻塞可能pin住carrier
+
+JDK 24+:
+    JEP 491改善synchronized相关pinning
+    native/foreign function相关pinning仍要关注
+```
+
+### 10.7 虚拟线程和GC / safepoint
+
+虚拟线程的栈不是传统OS线程栈。它的栈会以stack chunk对象形式存放在Java堆里, 可以按需增长和收缩。
+
+这带来几个理解点:
+
+1. 虚拟线程很多时, 线程栈内存主要表现为Java堆压力, 而不是一堆固定大小native stack。
+2. 虚拟线程栈不是传统平台线程那样的GC root处理方式。
+3. 虚拟线程阻塞时可能已经unmount, carrier继续跑其它任务。
+4. 分析safepoint时, 不要简单按“Java层Thread对象数量”等价推断OS线程数量或safepoint成本。
+
+但是虚拟线程不是绕过JVM运行时机制。它执行Java代码时仍然要经过解释器/JIT、GC、safepoint、异常、栈遍历等HotSpot机制。只是“Java线程”和“OS线程”的对应关系变成了运行时动态调度关系。
+
+### 10.8 怎么观察虚拟线程
+
+传统 `jstack` 展示平台线程比较合适, 但面对大量虚拟线程会不够用。JDK 21引入了新的线程dump能力:
+
+```shell
+jcmd <pid> Thread.dump_to_file thread-dump.txt
+jcmd <pid> Thread.dump_to_file -format=json thread-dump.json
+```
+
+几个注意点:
+
+1. OS工具只能看到平台线程/OS线程, 看不到每个虚拟线程。
+2. 新线程dump可以展示虚拟线程, 并支持JSON格式。
+3. JFR可以观察虚拟线程相关事件, 比如pinning。
+4. 如果配置 `-Djdk.trackAllThreads=false`, 某些直接用 `Thread.Builder` 创建的虚拟线程可能不被完整跟踪。
+
+所以排查虚拟线程问题时, 需要同时看:
+
+```text
+Java/JDK工具:
+    jcmd Thread.dump_to_file
+    JFR
+    应用日志里的请求/任务标识
+
+OS工具:
+    top -H / pidstat
+    只能说明carrier/platform线程的CPU和调度情况
+```
+
+### 10.9 常见误解
+
+1. 虚拟线程不是更快的线程。它提高的是高并发阻塞场景下的吞吐能力, 不是单个任务执行速度。
+2. 虚拟线程不是协程API。业务代码不需要手动yield给调度器。
+3. 虚拟线程不应该池化。需要限制并发时, 限制资源, 不限制虚拟线程数量本身。
+4. 虚拟线程不适合盲目承载CPU密集任务。CPU核心数仍然是硬上限。
+5. 虚拟线程不是完全脱离OS线程。真正执行时仍然需要carrier线程, carrier仍由OS调度。
+6. 虚拟线程不是所有阻塞都零成本。pinning、native调用、文件系统阻塞、ThreadLocal滥用都可能带来问题。
+
+## 11. 总结
 
 1. HotSpot主流Java线程模型是一对一映射到OS线程。
 2. JVM负责创建、管理、记录线程状态, 但CPU调度最终由OS完成。
-3. Linux、macOS、Windows在线程优先级、阻塞唤醒、计时器精度、电源策略上都有差异。
-4. `Thread.setPriority()`、`yield()`、`sleep()` 都不能作为严格调度保证。
-5. 分析线程问题时要结合 `jstack`、OS线程ID、CPU使用率和系统调度信息一起看。
+3. Java层状态、HotSpot内部状态、OS调度状态是三套不同抽象, 不能直接等同。
+4. Linux、macOS、Windows在线程优先级、阻塞唤醒、计时器精度、电源策略上都有差异。
+5. `Thread.setPriority()`、`yield()`、`sleep()` 都不能作为严格调度保证。
+6. 分析线程问题时要结合 `jstack`、OS线程ID、CPU使用率和系统调度信息一起看。
+7. JDK 21虚拟线程改变了Java线程和OS线程的一对一直觉, 需要单独区分virtual thread、platform thread、carrier thread。
+
+## 12. 参考资料
+
+* [OpenJDK jvm.cpp](https://github.com/openjdk/jdk/blob/master/src/hotspot/share/prims/jvm.cpp)
+* [OpenJDK thread.cpp](https://github.com/openjdk/jdk/blob/master/src/hotspot/share/runtime/thread.cpp)
+* [OpenJDK objectMonitor.cpp](https://github.com/openjdk/jdk/blob/master/src/hotspot/share/runtime/objectMonitor.cpp)
+* [OpenJDK park.hpp](https://github.com/openjdk/jdk/blob/master/src/hotspot/share/runtime/park.hpp)
+* [OpenJDK JEP 444 - Virtual Threads](https://openjdk.org/jeps/444)
+* [OpenJDK JEP 491 - Synchronize Virtual Threads without Pinning](https://openjdk.org/jeps/491)
