@@ -189,6 +189,52 @@ pinning:
     扩展性下降
 ```
 
+### 4.1 默认scheduler为什么用ForkJoinPool
+
+virtual thread的调度不是“每个virtual thread排进一个普通阻塞队列, 然后carrier按FIFO取任务”这么简单。默认scheduler选择 `ForkJoinPool`, 是因为它需要:
+
+1. 支持大量短小的continuation恢复任务。
+2. 支持worker本地队列, 减少全局队列竞争。
+3. 支持work stealing, 让carrier之间负载更均衡。
+4. 支持在某些阻塞场景下补偿增加carrier。
+
+源码里 `VirtualThread` 有一个默认scheduler:
+
+```java
+DEFAULT_SCHEDULER
+```
+
+它由 `createDefaultScheduler()` 创建。读源码时要注意这个scheduler调度的是:
+
+```text
+runContinuation任务
+```
+
+而不是普通意义上的业务 `Runnable`。业务 `Runnable` 已经被包进virtual thread的continuation里了。
+
+### 4.2 runContinuation提交到哪里
+
+源码里有 `submitRunContinuation()` 这一类方法。它的含义可以理解成:
+
+```text
+把当前virtual thread的continuation恢复任务
+重新提交给scheduler
+```
+
+如果当前就在默认scheduler的carrier上, JDK会尽量利用carrier自己的本地队列; 如果不是, 就走外部提交队列。
+
+这和普通线程池的区别是:
+
+```text
+普通线程池:
+    submit的是一个新的业务任务
+
+virtual thread scheduler:
+    submit的是“恢复某个virtual thread”的continuation任务
+```
+
+所以“重新调度”不是创建新任务, 而是让旧的执行栈继续跑。
+
 ## 5. 一次virtual thread执行流程
 
 创建:
@@ -319,6 +365,93 @@ virtual thread注册:
 区别在于NIO通常恢复callback, virtual thread恢复原调用栈。
 
 Inside Java的文章也用poller解释过网络IO: poller维护文件描述符到virtual thread的映射, IO事件到达后查回对应virtual thread并unpark它。见 [Networking I/O with Virtual Threads](https://inside.java/2021/05/10/networking-io-with-virtual-threads/)。
+
+### 6.1 Poller源码里的映射关系
+
+新版OpenJDK里可以看 `sun.nio.ch.Poller`。它的职责非常贴近你说的“调度线程检测任务是否完成”:
+
+```text
+I/O poller:
+    等待文件描述符就绪
+    就绪后unpark等待该fd的virtual thread
+```
+
+源码中能看到一个核心结构:
+
+```java
+Map<Integer, Thread>
+```
+
+含义就是:
+
+```text
+fd -> parked thread
+```
+
+这个 `Thread` 对于virtual thread场景, 就是等待这个fd事件的virtual thread。
+
+所以网络IO挂起恢复可以进一步细化成:
+
+```text
+read(fd)
+  |
+  v
+数据没到
+  |
+  v
+Poller注册 fd -> current virtual thread
+  |
+  v
+current virtual thread park / unmount
+  |
+  v
+Poller线程等待epoll/kqueue/wepoll事件
+  |
+  v
+fd就绪
+  |
+  v
+查map拿到virtual thread
+  |
+  v
+LockSupport.unpark(vthread)
+  |
+  v
+vthread重新进scheduler
+```
+
+这里和手写NIO最像。手写NIO里通常是:
+
+```text
+fd -> attachment / callback / channel state
+```
+
+JDK virtual thread里是:
+
+```text
+fd -> virtual thread
+```
+
+然后JDK负责恢复它的continuation。
+
+### 6.2 新版Poller mode
+
+新版本OpenJDK的 `Poller` 里还能看到不同poller mode。粗略说有三类思路:
+
+| mode | 大概含义 | 设计取向 |
+| :---: | :--- | :--- |
+| `SYSTEM_THREADS` | 读写poller是平台线程 | 传统、直接, poller自己阻塞等事件 |
+| `VTHREAD_POLLERS` | poller本身也可以是virtual thread | 更深地融入virtual thread调度 |
+| `POLLER_PER_CARRIER` | 每个carrier附近有poller协作 | 让polling和carrier调度关系更近 |
+
+这说明virtual thread不是只做了一个“轻量Thread对象”。JDK还在持续调整:
+
+1. IO事件由谁等。
+2. poller线程是平台线程还是虚拟线程。
+3. poller和carrier怎么配合。
+4. 事件唤醒后如何减少跨队列提交成本。
+
+所以这套机制的设计味道确实很像NIO分发, 只是分发目标从callback变成了virtual thread。
 
 ## 7. park / unpark场景
 
@@ -606,6 +739,96 @@ park / unpark / afterYield
 
 不要只看 `Thread` API。真正的设计重点在 `VirtualThread` 的状态机、`Continuation` 和 `sun.nio.ch` 的poller协作。
 
+### 13.1 VirtualThread状态机
+
+新版 `VirtualThread.java` 里能看到一组内部状态。它们不是Java层 `Thread.State`, 而是virtual thread调度器自己使用的状态。
+
+核心可以按几类理解:
+
+| 状态类别 | 典型状态 | 含义 |
+| :---: | :--- | :--- |
+| 创建/运行 | `NEW`、`STARTED`、`RUNNING` | 还没开始、已提交、正在carrier上运行 |
+| park | `PARKING`、`PARKED`、`UNPARKED` | 正在尝试挂起、已经卸载、已被唤醒待调度 |
+| timed park | `TIMED_PARKING`、`TIMED_PARKED` | 带超时的park |
+| pinning | `PINNED`、`TIMED_PINNED` | 不能卸载, 只能把carrier一起阻塞 |
+| yield | `YIELDING`、`YIELDED` | `Thread.yield()` 相关状态 |
+| monitor | `BLOCKING`、`BLOCKED`、`UNBLOCKED` | monitor enter阻塞和恢复 |
+| wait | `WAITING`、`WAIT`、`TIMED_WAITING`、`TIMED_WAIT` | `Object.wait()` 相关 |
+| 结束 | `TERMINATED` | virtual thread结束 |
+
+可以看几条关键转换:
+
+```text
+NEW -> STARTED -> RUNNING
+RUNNING -> PARKING -> PARKED
+PARKED -> UNPARKED -> RUNNING
+RUNNING -> PINNED -> RUNNING
+RUNNING -> BLOCKING -> BLOCKED
+BLOCKED -> UNBLOCKED -> RUNNING
+RUNNING -> TERMINATED
+```
+
+这些状态说明:
+
+1. mounted/unmounted是核心边界。
+2. park成功yield后, virtual thread通常进入unmounted状态。
+3. pinning时没有成功卸载, 只能继续占着carrier。
+4. monitor enter / Object.wait 不是简单等同于 `LockSupport.park()`。
+
+所以读virtual thread源码时, 要把状态机当成主线。它比单纯看 `Thread.State` 更接近真实调度逻辑。
+
+### 13.2 Continuation是恢复原调用栈的关键
+
+`Continuation` 可以理解成“可挂起的调用栈”。
+
+普通异步回调:
+
+```text
+callback1结束
+  |
+  v
+callback2开始
+```
+
+virtual thread:
+
+```text
+函数A调用函数B
+  |
+  v
+B里阻塞并挂起
+  |
+  v
+事件完成
+  |
+  v
+从B的挂起点继续
+  |
+  v
+返回A
+```
+
+这就是为什么virtual thread更像同步代码。它不是在事件完成后调用一个“新函数”, 而是在原来的栈上继续。
+
+因此源码里要重点看:
+
+```text
+Continuation.run()
+Continuation.yield(...)
+VirtualThread.runContinuation
+VirtualThread.afterYield
+```
+
+你前面说的“另类异步回调”很准确, 但要补上这个差异:
+
+```text
+普通异步回调:
+    恢复控制流的一段函数
+
+virtual thread:
+    恢复整个continuation
+```
+
 ## 14. 这套设计的本质
 
 从应用层看:
@@ -692,6 +915,7 @@ VirtualThread:
 * [OpenJDK VirtualThread.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/VirtualThread.java)
 * [OpenJDK Continuation.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/jdk/internal/vm/Continuation.java)
 * [OpenJDK ThreadBuilders.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/ThreadBuilders.java)
+* [OpenJDK Poller.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/sun/nio/ch/Poller.java)
 * [OpenJDK JEP 444 - Virtual Threads](https://openjdk.org/jeps/444)
 * [OpenJDK JEP 491 - Synchronize Virtual Threads without Pinning](https://openjdk.org/jeps/491)
 * [Inside Java - Networking I/O with Virtual Threads](https://inside.java/2021/05/10/networking-io-with-virtual-threads/)
