@@ -2,6 +2,26 @@
 
 > 本文不把virtual thread当成普通线程模型的一个小补丁, 而是把它当成一种运行时设计来看: JDK把异步事件分发、continuation保存/恢复、carrier线程调度封装在 `Thread` API 后面, 让应用层继续写同步阻塞代码。
 
+## 0. 写作约束和事实口径
+
+这篇文档里有三类内容, 阅读时要区分:
+
+| 类型 | 说明 | 处理方式 |
+| :---: | :--- | :--- |
+| 官方事实 | JEP、OpenJDK源码、Java/Kotlin/Go官方文档能直接支持的结论 | 在正文或附录中给出依据 |
+| 源码归纳 | 从源码结构归纳出的流程, 例如状态机、调度链路 | 标注源码入口, 避免说成规范保证 |
+| 理解类比 | 用线程池、NIO selector、回调等帮助理解 | 明确写成“类比”, 不当成源码实现 |
+
+本文默认以JDK 21正式版virtual thread为主线, 并在涉及JDK 24+变化时单独标注。OpenJDK源码链接指向主干版本, 具体实现可能随着JDK版本演进而变化, 所以版本敏感的判断都要回到对应版本源码确认。
+
+本文尽量遵守下面的事实约束:
+
+1. JDK设计目标、使用方式、调度模型、pinning限制等, 以JEP 444 / JEP 491为准。
+2. `VirtualThread` 状态机、`Continuation`、scheduler提交、`Poller`映射等, 以OpenJDK源码为准。
+3. Go goroutine、Kotlin coroutine只做设计对比, 不把它们等同于Java virtual thread。
+4. “像NIO分发”“像异步回调”都只是应用层类比, 准确说法是: 事件完成后恢复的是virtual thread的continuation, 不是业务callback。
+5. 能贴依据的结论统一在附录中列出, 便于反向验证。
+
 ## 1. 先用应用层思路类比
 
 如果自己设计一个类似机制, 很容易想到:
@@ -910,7 +930,58 @@ VirtualThread:
 
 这比“线程池跑任务”多出来的关键能力是 `Continuation`: 它让JDK可以恢复原来的执行栈, 而不是只调用一个新的callback。
 
-## 16. 参考资料
+## 16. 附录: 事实依据索引
+
+这里把正文中的关键结论和依据集中列出来。以后继续补充时, 优先把新结论放到这张表里校验。
+
+### 16.1 JEP和官方说明
+
+| 结论 | 依据 |
+| :--- | :--- |
+| virtual thread 是JDK 21正式特性 | [JEP 444](https://openjdk.org/jeps/444) 标注 Release 21, Status Delivered |
+| virtual thread 是 `java.lang.Thread` 的实例, 但不绑定特定OS线程 | [JEP 444](https://openjdk.org/jeps/444) Description说明 virtual thread 是 `Thread` 实例, 不 tied to a particular OS thread |
+| virtual thread 采用M:N调度 | [JEP 444](https://openjdk.org/jeps/444) 说明大量virtual threads调度到较少OS threads |
+| scheduler 是FIFO模式的 work-stealing `ForkJoinPool` | [JEP 444](https://openjdk.org/jeps/444) Scheduling virtual threads |
+| 默认 parallelism 等于 available processors, 可用 `jdk.virtualThreadScheduler.parallelism` 调整 | [JEP 444](https://openjdk.org/jeps/444) Scheduling virtual threads |
+| carrier 不对virtual thread保持亲和性 | [JEP 444](https://openjdk.org/jeps/444) Scheduling virtual threads |
+| virtual thread 不实现强制时间片抢占 | [JEP 444](https://openjdk.org/jeps/444) Scheduling virtual threads |
+| virtual thread 不应该池化, 限制资源并发应用 semaphore 等机制 | [JEP 444](https://openjdk.org/jeps/444) Do not pool virtual threads |
+| CPU密集任务不会因为virtual thread数量增加而变快 | [JEP 444](https://openjdk.org/jeps/444) Using virtual threads vs. platform threads |
+| JDK 21中 `synchronized` 和 native/foreign 调用可能导致pinning | [JEP 444](https://openjdk.org/jeps/444) Executing virtual threads / pinned说明 |
+| JDK 24通过JEP 491改善 `synchronized` 导致的pinning | [JEP 491](https://openjdk.org/jeps/491) |
+| 新线程dump支持virtual thread, 并可输出JSON | [JEP 444](https://openjdk.org/jeps/444) Observing virtual threads |
+
+### 16.2 OpenJDK源码依据
+
+| 结论 | 源码入口 |
+| :--- | :--- |
+| virtual thread主状态机、mount/unmount、park/unpark在 `VirtualThread` 中 | [VirtualThread.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/VirtualThread.java) |
+| `Continuation` 是保存/恢复执行状态的核心抽象 | [Continuation.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/jdk/internal/vm/Continuation.java) |
+| `Thread.startVirtualThread` / builder入口和构建逻辑可从 `ThreadBuilders` 跟读 | [ThreadBuilders.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/ThreadBuilders.java) |
+| `runContinuation` 会被提交给scheduler恢复执行 | [VirtualThread.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/VirtualThread.java) 中 `submitRunContinuation` |
+| 网络IO poller维护文件描述符到等待线程的映射 | [Poller.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/sun/nio/ch/Poller.java) 中 `Map<Integer, Thread>` |
+| poller负责在文件描述符ready时unpark等待的virtual thread | [Poller.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/sun/nio/ch/Poller.java) |
+| 新版poller存在不同mode, 如 `SYSTEM_THREADS`、`VTHREAD_POLLERS`、`POLLER_PER_CARRIER` | [Poller.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/sun/nio/ch/Poller.java) |
+
+### 16.3 对比对象依据
+
+| 对比项 | 依据 |
+| :--- | :--- |
+| Go的 `go` 语句会启动一个独立并发控制流 | [Go Specification - Go statements](https://go.dev/ref/spec#Go_statements) |
+| goroutine是用户级轻量线程, 会复用OS线程 | [Go Wiki - Go for C++ Programmers](https://tip.golang.org/wiki/GoForCPPProgrammers) |
+| Kotlin coroutine是可挂起的计算, 挂起时不阻塞线程 | [Kotlin Coroutines basics](https://kotlinlang.org/docs/coroutines-basics.html) |
+| Kotlin coroutine可在一个线程挂起, 在另一个线程恢复 | [Kotlin Coroutines basics](https://kotlinlang.org/docs/coroutines-basics.html) |
+
+### 16.4 类比和推论边界
+
+| 表述 | 边界 |
+| :--- | :--- |
+| “像NIO分发” | 只是帮助理解 `fd -> virtual thread` 和事件就绪后的unpark; 不表示JDK实现等同于手写NIO框架 |
+| “像异步回调” | 只是说明底层事件驱动思想相似; virtual thread恢复的是continuation, 不是业务callback |
+| “像fiber/有栈协程” | 只是抽象层类比; Java virtual thread是Java平台的具体实现, 要以JEP和OpenJDK源码为准 |
+| “线程池+调度线程可以类比” | 只类比事件登记和恢复调度; 普通线程池没有恢复原调用栈的continuation能力 |
+
+## 17. 参考资料
 
 * [OpenJDK VirtualThread.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/lang/VirtualThread.java)
 * [OpenJDK Continuation.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/jdk/internal/vm/Continuation.java)
